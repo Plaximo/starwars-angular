@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PeopleList } from '../people/pages/people-list/people-list';
 import { PlanetsList } from '../planets/components/planets-list/planets-list';
-import { PeopleViewmodel } from '../people/services/people-viewmodel.service';
+import { PeopleListViewModel } from '../people/services/people-list-viewmodel.service';
 import { PlanetsViewmodel } from '../planets/services/planets-viewmodel.service';
 
 export type HomeTab = 'characters' | 'planets';
@@ -19,7 +19,7 @@ export class Home {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly peopleVm = inject(PeopleViewmodel);
+  protected readonly peopleVm = inject(PeopleListViewModel);
   protected readonly planetsVm = inject(PlanetsViewmodel);
 
   readonly activeTab = signal<HomeTab>('characters');

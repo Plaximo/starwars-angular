@@ -13,7 +13,7 @@ import { SortField, SortDirection } from '../models/people-filter.model';
 import { PersonFormPayload } from '../models/person-form.model';
 
 @Injectable({ providedIn: 'root' })
-export class PeopleViewmodel {
+export class PeopleListViewModel {
   private readonly destroyRef = inject(DestroyRef);
   private readonly peopleRepository: IPeopleRepository = inject(SwapiPeopleRepository);
   private readonly bookmarkService = inject(PeopleBookmarkService);

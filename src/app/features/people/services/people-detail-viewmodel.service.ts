@@ -12,7 +12,7 @@ import { PeopleBookmarkService } from './people-bookmark.service';
 import { PersonFormPayload } from '../models/person-form.model';
 
 @Injectable({ providedIn: 'root' })
-export class PeopleDetailViewmodel {
+export class PeopleDetailViewModel {
   // Uses exclusively repositories, NO direct SwapiService in ViewModel or Component!
   private readonly destroyRef = inject(DestroyRef);
   private readonly peopleRepo: IPeopleRepository = inject(SwapiPeopleRepository);

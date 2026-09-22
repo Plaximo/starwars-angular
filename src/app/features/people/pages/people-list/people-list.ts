@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { PeopleViewmodel } from '../../services/people-viewmodel.service';
+import { PeopleListViewModel } from '../../services/people-list-viewmodel.service';
 import { PeopleHeader } from '../../components/people-header/people-header';
 import { PeopleFilterBar } from '../../components/people-filter-bar/people-filter-bar';
 import { PeopleListItem } from '../../components/people-list-item/people-list-item';
@@ -9,7 +9,7 @@ import { PersonFormModal } from '../../components/person-form-modal/person-form-
 
 @Component({
   imports: [
-    PeopleHeader,
+    PeopleHeader, 
     PeopleFilterBar,
     PeopleListItem,
     PeopleSkeletonGrid,
@@ -22,5 +22,5 @@ import { PersonFormModal } from '../../components/person-form-modal/person-form-
 })
 export class PeopleList {
   // Pure Smart Component: Delegates all state, modal management & actions to ViewModel!
-  protected readonly vm = inject(PeopleViewmodel);
+  protected readonly vm = inject(PeopleListViewModel);
 }
