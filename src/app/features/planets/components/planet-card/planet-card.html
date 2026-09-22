@@ -6,7 +6,7 @@
     <!-- Top Row: Name and Resident Count Badge -->
     <div class="flex items-start justify-between gap-3 mb-3">
       <div>
-        <span class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase block">Planet / Star System</span>
+        <span class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase block">{{ i18n.t().planetCardType }}</span>
         <h3 class="text-lg font-bold text-slate-100 group-hover:text-amber-300 transition-colors">
           {{ planet().name }}
         </h3>
@@ -15,7 +15,7 @@
       <!-- Residents Count Badge -->
       <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 shrink-0">
         <span>👥</span>
-        <span>{{ planet().residents?.length || 0 }} Residents</span>
+        <span>{{ i18n.t().residentsCount(planet().residents?.length || 0) }}</span>
       </span>
     </div>
 
@@ -32,27 +32,27 @@
     <!-- Stats Grid -->
     <div class="grid grid-cols-2 gap-2 text-xs py-3 border-y border-slate-800/80">
       <div>
-        <span class="text-slate-500 block text-[10px] uppercase font-medium">Population</span>
+        <span class="text-slate-500 block text-[10px] uppercase font-medium">{{ i18n.t().population }}</span>
         <span class="font-semibold text-slate-200">
           {{ formatPopulation(planet().population) }}
         </span>
       </div>
       <div>
-        <span class="text-slate-500 block text-[10px] uppercase font-medium">Diameter</span>
+        <span class="text-slate-500 block text-[10px] uppercase font-medium">{{ i18n.t().diameter }}</span>
         <span class="font-semibold text-slate-200">
-          {{ planet().diameter !== 'unknown' ? (planet().diameter | number) + ' km' : 'Unknown' }}
+          {{ planet().diameter !== 'unknown' ? (planet().diameter | number) + ' km' : i18n.t().unknown }}
         </span>
       </div>
       <div>
-        <span class="text-slate-500 block text-[10px] uppercase font-medium">Gravity</span>
+        <span class="text-slate-500 block text-[10px] uppercase font-medium">{{ i18n.t().gravity }}</span>
         <span class="font-medium text-slate-300">
-          {{ planet().gravity !== 'unknown' ? planet().gravity : 'Standard' }}
+          {{ planet().gravity !== 'unknown' ? planet().gravity : i18n.t().standardGravity }}
         </span>
       </div>
       <div>
-        <span class="text-slate-500 block text-[10px] uppercase font-medium">Surface Water</span>
+        <span class="text-slate-500 block text-[10px] uppercase font-medium">{{ i18n.t().surfaceWater }}</span>
         <span class="font-medium text-slate-300">
-          {{ planet().surface_water !== 'unknown' ? planet().surface_water + '%' : 'Unknown' }}
+          {{ planet().surface_water !== 'unknown' ? planet().surface_water + '%' : i18n.t().unknown }}
         </span>
       </div>
     </div>
@@ -60,7 +60,7 @@
 
   <!-- Card Footer -->
   <div class="pt-3 mt-1 flex items-center justify-between text-[11px] text-slate-500">
-    <span>Orbital: {{ planet().orbital_period !== 'unknown' ? planet().orbital_period + 'd' : 'N/A' }}</span>
-    <span>Rotation: {{ planet().rotation_period !== 'unknown' ? planet().rotation_period + 'h' : 'N/A' }}</span>
+    <span>{{ i18n.t().orbital }} {{ planet().orbital_period !== 'unknown' ? planet().orbital_period + (i18n.isGerman() ? ' Tage' : 'd') : 'N/A' }}</span>
+    <span>{{ i18n.t().rotation }} {{ planet().rotation_period !== 'unknown' ? planet().rotation_period + (i18n.isGerman() ? ' Std.' : 'h') : 'N/A' }}</span>
   </div>
 </article>

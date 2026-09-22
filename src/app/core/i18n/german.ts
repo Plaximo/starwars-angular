@@ -103,5 +103,62 @@ export const GERMAN: TranslationDictionary = {
     undoRecordRemoved: 'Charakter-Datensatz entfernt.',
     undoBtn: 'Rückgängig',
     rollbackTitle: 'Rollback durchgeführt',
-    deleteConfirm: 'Möchtest du diesen Charakter-Datensatz wirklich aus dem Holocron löschen?'
-  }
+    deleteConfirm: 'Möchtest du diesen Charakter-Datensatz wirklich aus dem Holocron löschen?',
+
+    // Planet & Star Systems View
+    planetsTitle: 'Galaktische Sternensysteme & Planeten',
+    planetsSubtitle: 'Planeten-Register des Outer Rim, Mid Rim und der Kernwelten.',
+    planetsShowingCount: (filtered, total) => `Zeige ${filtered} von ${total} Planeten`,
+    searchPlanetsPlaceholder: 'Planet oder Terrain suchen...',
+    climateAll: 'Alle Klimazonen',
+    climateArid: 'Trocken / Arid',
+    climateTemperate: 'Gemäßigt',
+    climateTropical: 'Tropisch',
+    climateFrozen: 'Eis / Gefroren',
+    climateMurky: 'Sumpfig / Düster',
+    climateHot: 'Heiß',
+    climateWindy: 'Windig',
+    sortByPlanetName: 'Sortieren nach: Name',
+    sortByPopulation: 'Sortieren nach: Bevölkerung',
+    sortByDiameter: 'Sortieren nach: Durchmesser',
+    sortDirectionLabel: 'Sortierrichtung:',
+    sortDirectionAsc: 'Aufsteigend ↑',
+    sortDirectionDesc: 'Absteigend ↓',
+    noPlanetsFoundTitle: 'Keine Sternensysteme gefunden',
+    noPlanetsFoundDesc: 'Keine Planeten entsprechen deinen Filterkriterien. Passe die Suchanfrage oder den Klimafilter an.',
+
+    // Planet Card
+    planetCardType: 'Planet / Sternensystem',
+    residentsCount: (count) => `${count} Bewohner`,
+    surfaceWater: 'Oberflächenwasser',
+    orbital: 'Umlauf:',
+    rotation: 'Rotation:',
+    days: 'Tage',
+    hours: 'Std.',
+    standardGravity: 'Standard',
+    billion: 'Mrd.',
+    million: 'Mio.',
+
+    // Dev Simulation & Mode Bar
+    simErrorLabel: 'Sim-Fehler:',
+    simErrorTooltip: 'Simulierten Netzwerkfehler (HTTP 500) umschalten, um Optimistic Updates mit Rollback zu testen',
+    modeLabel: 'Modus:',
+    offlineModeActiveLabel: 'Offline-Modus aktiv:',
+    offlineModeTooltip: 'Simulierten Offline-Modus umschalten, um den Offline-Cache zu testen',
+    switchLanguageTooltip: 'Switch to English',
+
+    // Error Messages & Toasts
+    errorSavingPerson: (name) => `Fehler beim Speichern von "${name}"`,
+    errorCreatingPerson: 'Fehler beim Erstellen des Charakters',
+    errorDeletingPerson: (name) => `Löschen von "${name}" fehlgeschlagen!`,
+    rollbackReverted: 'Änderungen wurden per Rollback zurückgesetzt.',
+    rollbackRestored: 'Der Datensatz wurde per Rollback wiederhergestellt.',
+    simulatedNetworkErrorCreate: 'Simulierter Netzwerkfehler beim Erstellen (HTTP 500: Server nicht erreichbar).',
+    simulatedNetworkErrorUpdate: 'Simulierter Netzwerkfehler beim Speichern (HTTP 500: Server nicht erreichbar).',
+    simulatedNetworkErrorDelete: 'Simulierter Netzwerkfehler beim Löschen (HTTP 500: Server nicht erreichbar).',
+
+    // Split View & Other Actions
+    closeDossier: 'Dossier schließen',
+    splitViewBtnTitle: 'Zur Split Master-Detail Ansicht wechseln',
+    toggleSortDirTitle: 'Sortierrichtung umschalten'
+  };

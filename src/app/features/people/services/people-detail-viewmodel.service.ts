@@ -11,6 +11,7 @@ import { SwapiStarshipsRepository } from '../../../core/api/swapi/swapi-starship
 import { PeopleBookmarkService } from './people-bookmark.service';
 import { PersonFormPayload } from '../models/person-form.model';
 import { ErrorToastService } from '../../../shared/services/error-toast.service';
+import { TranslationService } from '../../../core/i18n/translation.service';
 
 @Injectable({ providedIn: 'root' })
 export class PeopleDetailViewModel {
@@ -20,6 +21,7 @@ export class PeopleDetailViewModel {
   private readonly starshipRepo: IStarshipRepository = inject(SwapiStarshipsRepository);
   private readonly bookmarkService = inject(PeopleBookmarkService);
   private readonly errorToast = inject(ErrorToastService);
+  private readonly i18n = inject(TranslationService);
   private readonly router = inject(Router);
 
   // Subscriptions
@@ -106,8 +108,8 @@ export class PeopleDetailViewModel {
           this.person.set(current);
           this.resolveRelations(current);
           this.errorToast.trigger(
-            `Fehler beim Speichern von "${current.name}"`,
-            err?.message || 'Änderungen wurden per Rollback zurückgesetzt.'
+            this.i18n.t().errorSavingPerson(current.name),
+            err?.message || this.i18n.t().rollbackReverted
           );
         }
       });
@@ -117,7 +119,7 @@ export class PeopleDetailViewModel {
     const current = this.person();
     if (!current) return;
 
-    const confirmed = window.confirm('Are you sure you want to delete this character record from the Holocron?');
+    const confirmed = window.confirm(this.i18n.t().deleteConfirm);
     if (!confirmed) return;
 
     this.peopleRepo
@@ -126,7 +128,10 @@ export class PeopleDetailViewModel {
       .subscribe({
         next: () => this.router.navigate(['/'], { queryParamsHandling: 'preserve' }),
         error: (err: any) => {
-          this.errorToast.trigger(`Löschen von "${current.name}" fehlgeschlagen!`, err?.message);
+          this.errorToast.trigger(
+            this.i18n.t().errorDeletingPerson(current.name),
+            err?.message || this.i18n.t().rollbackRestored
+          );
         }
       });
   }

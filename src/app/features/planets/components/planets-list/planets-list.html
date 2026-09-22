@@ -5,10 +5,10 @@
       <div>
         <h2 class="text-xl font-bold text-white flex items-center gap-2">
           <span>🪐</span>
-          <span>Galactic Star Systems & Planets</span>
+          <span>{{ i18n.t().planetsTitle }}</span>
         </h2>
         <p class="text-xs text-slate-400 mt-0.5">
-          Planetary registry across the Outer Rim, Mid Rim, and Core Worlds.
+          {{ i18n.t().planetsSubtitle }}
         </p>
       </div>
 
@@ -20,12 +20,12 @@
             (click)="vm.resetFilters()"
             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition-colors cursor-pointer"
           >
-            <span>✕ Reset filters</span>
+            <span>✕ {{ i18n.t().resetFilters }}</span>
           </button>
         }
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-950 border border-slate-700 text-indigo-300">
           <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
-          Showing {{ vm.filteredCount() }} of {{ vm.totalCount() }} planets
+          {{ i18n.t().planetsShowingCount(vm.filteredCount(), vm.totalCount()) }}
         </span>
       </div>
     </div>
@@ -41,7 +41,7 @@
           type="text"
           [value]="vm.search()"
           (input)="vm.setSearch($any($event.target).value)"
-          placeholder="Search planet name or terrain..."
+          [placeholder]="i18n.t().searchPlanetsPlaceholder"
           class="w-full pl-8 pr-8 py-2 bg-slate-950/70 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition"
         />
         @if (vm.search()) {
@@ -62,14 +62,14 @@
           (change)="vm.setClimate($any($event.target).value)"
           class="w-full px-3 py-2 bg-slate-950/70 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition cursor-pointer"
         >
-          <option value="all">All Climates</option>
-          <option value="arid">Arid</option>
-          <option value="temperate">Temperate</option>
-          <option value="tropical">Tropical</option>
-          <option value="frozen">Frozen / Frigid</option>
-          <option value="murky">Murky / Swamp</option>
-          <option value="hot">Hot</option>
-          <option value="windy">Windy</option>
+          <option value="all">{{ i18n.t().climateAll }}</option>
+          <option value="arid">{{ i18n.t().climateArid }}</option>
+          <option value="temperate">{{ i18n.t().climateTemperate }}</option>
+          <option value="tropical">{{ i18n.t().climateTropical }}</option>
+          <option value="frozen">{{ i18n.t().climateFrozen }}</option>
+          <option value="murky">{{ i18n.t().climateMurky }}</option>
+          <option value="hot">{{ i18n.t().climateHot }}</option>
+          <option value="windy">{{ i18n.t().climateWindy }}</option>
         </select>
       </div>
 
@@ -80,9 +80,9 @@
           (change)="vm.setSortBy($any($event.target).value)"
           class="w-full px-3 py-2 bg-slate-950/70 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition cursor-pointer"
         >
-          <option value="name">Sort by: Name</option>
-          <option value="population">Sort by: Population</option>
-          <option value="diameter">Sort by: Diameter</option>
+          <option value="name">{{ i18n.t().sortByPlanetName }}</option>
+          <option value="population">{{ i18n.t().sortByPopulation }}</option>
+          <option value="diameter">{{ i18n.t().sortByDiameter }}</option>
         </select>
       </div>
 
@@ -93,9 +93,9 @@
           (click)="vm.toggleSortDir()"
           class="w-full flex items-center justify-center gap-2 px-3 py-2 bg-slate-950/70 border border-slate-700/80 hover:border-slate-600 rounded-lg text-xs font-medium text-slate-200 hover:text-white transition cursor-pointer"
         >
-          <span>Sort Direction:</span>
+          <span>{{ i18n.t().sortDirectionLabel }}</span>
           <span class="font-bold text-amber-400 uppercase">
-            {{ vm.sortDir() === 'asc' ? 'Ascending ↑' : 'Descending ↓' }}
+            {{ vm.sortDir() === 'asc' ? i18n.t().sortDirectionAsc : i18n.t().sortDirectionDesc }}
           </span>
         </button>
       </div>
@@ -125,16 +125,16 @@
         <!-- Empty State -->
         <div class="col-span-full py-16 text-center space-y-3 p-8 rounded-2xl bg-slate-900/40 border border-slate-800">
           <span class="text-4xl block">🪐</span>
-          <h3 class="text-lg font-bold text-slate-200">No Star Systems Found</h3>
+          <h3 class="text-lg font-bold text-slate-200">{{ i18n.t().noPlanetsFoundTitle }}</h3>
           <p class="text-xs text-slate-400 max-w-sm mx-auto">
-            No planets matched your filter criteria. Try adjusting the search query or climate selector.
+            {{ i18n.t().noPlanetsFoundDesc }}
           </p>
           <button
             type="button"
             (click)="vm.resetFilters()"
             class="px-4 py-2 rounded-lg text-xs font-semibold bg-amber-400/10 text-amber-300 border border-amber-400/30 hover:bg-amber-400/20 transition cursor-pointer"
           >
-            Reset Filters
+            {{ i18n.t().resetFilters }}
           </button>
         </div>
       }

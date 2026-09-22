@@ -114,6 +114,63 @@ export interface TranslationDictionary {
   undoBtn: string;
   rollbackTitle: string;
   deleteConfirm: string;
+
+  // Planet & Star Systems View
+  planetsTitle: string;
+  planetsSubtitle: string;
+  planetsShowingCount: (filtered: number, total: number) => string;
+  searchPlanetsPlaceholder: string;
+  climateAll: string;
+  climateArid: string;
+  climateTemperate: string;
+  climateTropical: string;
+  climateFrozen: string;
+  climateMurky: string;
+  climateHot: string;
+  climateWindy: string;
+  sortByPlanetName: string;
+  sortByPopulation: string;
+  sortByDiameter: string;
+  sortDirectionLabel: string;
+  sortDirectionAsc: string;
+  sortDirectionDesc: string;
+  noPlanetsFoundTitle: string;
+  noPlanetsFoundDesc: string;
+
+  // Planet Card
+  planetCardType: string;
+  residentsCount: (count: number) => string;
+  surfaceWater: string;
+  orbital: string;
+  rotation: string;
+  days: string;
+  hours: string;
+  standardGravity: string;
+  billion: string;
+  million: string;
+
+  // Dev Simulation & Mode Bar
+  simErrorLabel: string;
+  simErrorTooltip: string;
+  modeLabel: string;
+  offlineModeActiveLabel: string;
+  offlineModeTooltip: string;
+  switchLanguageTooltip: string;
+
+  // Error Messages & Toasts
+  errorSavingPerson: (name: string) => string;
+  errorCreatingPerson: string;
+  errorDeletingPerson: (name: string) => string;
+  rollbackReverted: string;
+  rollbackRestored: string;
+  simulatedNetworkErrorCreate: string;
+  simulatedNetworkErrorUpdate: string;
+  simulatedNetworkErrorDelete: string;
+
+  // Split View & Other Actions
+  closeDossier: string;
+  splitViewBtnTitle: string;
+  toggleSortDirTitle: string;
 }
 
 export const TRANSLATIONS: Record<Language, TranslationDictionary> = {

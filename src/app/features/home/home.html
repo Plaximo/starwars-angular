@@ -19,7 +19,7 @@
         type="button"
         (click)="i18n.toggleLanguage()"
         class="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-xs font-semibold bg-slate-950 border border-slate-800 hover:border-amber-400/50 text-slate-300 hover:text-white transition-all cursor-pointer shadow-sm"
-        [title]="i18n.isGerman() ? 'Switch to English' : 'Auf Deutsch umschalten'"
+        [title]="i18n.t().switchLanguageTooltip"
       >
         <span>{{ i18n.isGerman() ? '🇩🇪' : '🇬🇧' }}</span>
         <span class="font-bold text-amber-300">{{ i18n.lang().toUpperCase() }}</span>
@@ -36,10 +36,10 @@
         [class.border-slate-800]="!simulation.simulateError()"
         [class.text-slate-400]="!simulation.simulateError()"
         class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium border hover:border-amber-400/40 transition-all cursor-pointer shadow-sm"
-        title="Toggle simulated network error (HTTP 500) to test Optimistic Updates with Rollback"
+        [title]="i18n.t().simErrorTooltip"
       >
         <span [class.animate-pulse]="simulation.simulateError()">⚡</span>
-        <span class="text-[11px] font-semibold">Sim Error:</span>
+        <span class="text-[11px] font-semibold">{{ i18n.t().simErrorLabel }}</span>
         <span
           [class.bg-rose-500]="simulation.simulateError()"
           [class.text-white]="simulation.simulateError()"
@@ -62,10 +62,10 @@
         [class.border-slate-800]="!onlineStatus.isOffline()"
         [class.text-slate-400]="!onlineStatus.isOffline()"
         class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium border hover:border-amber-400/40 transition-all cursor-pointer shadow-sm"
-        title="Toggle simulated offline mode to test offline cache fallback"
+        [title]="i18n.t().offlineModeTooltip"
       >
         <span>{{ onlineStatus.isOffline() ? '📡' : '🌐' }}</span>
-        <span class="text-[11px] font-semibold hidden sm:inline">Mode:</span>
+        <span class="text-[11px] font-semibold hidden sm:inline">{{ i18n.t().modeLabel }}</span>
         <span
           [class.bg-amber-400]="onlineStatus.isOffline()"
           [class.text-slate-950]="onlineStatus.isOffline()"
@@ -140,7 +140,7 @@
       <div class="flex items-center gap-2.5">
         <span class="text-base animate-pulse">📡</span>
         <div>
-          <span class="font-bold">{{ i18n.isGerman() ? 'Offline-Modus aktiv:' : 'Offline Mode Active:' }}</span>
+          <span class="font-bold">{{ i18n.t().offlineModeActiveLabel }}</span>
           <span class="text-amber-200/80 ml-1">{{ i18n.t().modeOfflineBanner }}</span>
         </div>
       </div>

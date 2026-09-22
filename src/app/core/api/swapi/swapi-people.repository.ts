@@ -7,6 +7,7 @@ import { IPeopleRepository } from '../repository.interface';
 import { LocalStorageService } from '../../storage/local-storage.service';
 import { NetworkSimulationService } from '../network-simulation.service';
 import { OnlineStatusService } from '../../services/online-status.service';
+import { TranslationService } from '../../i18n/translation.service';
 
 const STORAGE_KEYS = {
   CUSTOM: 'sw_custom_people',
@@ -20,6 +21,7 @@ export class SwapiPeopleRepository implements IPeopleRepository {
   private readonly swapi = inject(SwapiService);
   private readonly storage = inject(LocalStorageService);
   private readonly onlineStatus = inject(OnlineStatusService);
+  private readonly i18n = inject(TranslationService);
   readonly simulation = inject(NetworkSimulationService);
 
   private baseSwapiPeople: People[] | null = null;
@@ -68,21 +70,21 @@ export class SwapiPeopleRepository implements IPeopleRepository {
   create(data: Omit<People, 'id' | 'url'>): Observable<People> {
     return this.simulateNetworkMutation(
       () => this.createCustomPerson(data),
-      'Simulierter Netzwerkfehler beim Erstellen (HTTP 500: Server nicht erreichbar).'
+      this.i18n.t().simulatedNetworkErrorCreate
     );
   }
 
   update(id: string, changes: Partial<People>): Observable<People> {
     return this.simulateNetworkMutation(
       () => this.applyPersonChanges(id, changes),
-      'Simulierter Netzwerkfehler beim Speichern (HTTP 500: Server nicht erreichbar).'
+      this.i18n.t().simulatedNetworkErrorUpdate
     );
   }
 
   delete(id: string): Observable<void> {
     return this.simulateNetworkMutation(
       () => this.removePerson(id),
-      'Simulierter Netzwerkfehler beim Löschen (HTTP 500: Server nicht erreichbar).'
+      this.i18n.t().simulatedNetworkErrorDelete
     );
   }
 

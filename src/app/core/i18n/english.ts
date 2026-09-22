@@ -103,5 +103,62 @@ export const ENGLISH: TranslationDictionary = {
     undoRecordRemoved: 'Character record removed.',
     undoBtn: 'Undo',
     rollbackTitle: 'Rollback executed',
-    deleteConfirm: 'Are you sure you want to delete this character record from the Holocron?'
-  }
+    deleteConfirm: 'Are you sure you want to delete this character record from the Holocron?',
+
+    // Planet & Star Systems View
+    planetsTitle: 'Galactic Star Systems & Planets',
+    planetsSubtitle: 'Planetary registry across the Outer Rim, Mid Rim, and Core Worlds.',
+    planetsShowingCount: (filtered, total) => `Showing ${filtered} of ${total} planets`,
+    searchPlanetsPlaceholder: 'Search planet name or terrain...',
+    climateAll: 'All Climates',
+    climateArid: 'Arid',
+    climateTemperate: 'Temperate',
+    climateTropical: 'Tropical',
+    climateFrozen: 'Frozen / Frigid',
+    climateMurky: 'Murky / Swamp',
+    climateHot: 'Hot',
+    climateWindy: 'Windy',
+    sortByPlanetName: 'Sort by: Name',
+    sortByPopulation: 'Sort by: Population',
+    sortByDiameter: 'Sort by: Diameter',
+    sortDirectionLabel: 'Sort Direction:',
+    sortDirectionAsc: 'Ascending ↑',
+    sortDirectionDesc: 'Descending ↓',
+    noPlanetsFoundTitle: 'No Star Systems Found',
+    noPlanetsFoundDesc: 'No planets matched your filter criteria. Try adjusting the search query or climate selector.',
+
+    // Planet Card
+    planetCardType: 'Planet / Star System',
+    residentsCount: (count) => `${count} Resident${count === 1 ? '' : 's'}`,
+    surfaceWater: 'Surface Water',
+    orbital: 'Orbital:',
+    rotation: 'Rotation:',
+    days: 'days',
+    hours: 'h',
+    standardGravity: 'Standard',
+    billion: 'Billion',
+    million: 'Million',
+
+    // Dev Simulation & Mode Bar
+    simErrorLabel: 'Sim Error:',
+    simErrorTooltip: 'Toggle simulated network error (HTTP 500) to test Optimistic Updates with Rollback',
+    modeLabel: 'Mode:',
+    offlineModeActiveLabel: 'Offline Mode Active:',
+    offlineModeTooltip: 'Toggle simulated offline mode to test offline cache fallback',
+    switchLanguageTooltip: 'Auf Deutsch umschalten',
+
+    // Error Messages & Toasts
+    errorSavingPerson: (name) => `Error saving "${name}"`,
+    errorCreatingPerson: 'Error creating character record',
+    errorDeletingPerson: (name) => `Failed to delete "${name}"!`,
+    rollbackReverted: 'Changes were reverted via rollback.',
+    rollbackRestored: 'Record was restored via rollback.',
+    simulatedNetworkErrorCreate: 'Simulated network error during creation (HTTP 500: Server unavailable).',
+    simulatedNetworkErrorUpdate: 'Simulated network error during save (HTTP 500: Server unavailable).',
+    simulatedNetworkErrorDelete: 'Simulated network error during deletion (HTTP 500: Server unavailable).',
+
+    // Split View & Other Actions
+    closeDossier: 'Close dossier',
+    splitViewBtnTitle: 'Switch to Split Master-Detail View',
+    toggleSortDirTitle: 'Toggle sort direction'
+  };

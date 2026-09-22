@@ -93,7 +93,7 @@
     <button
       type="button"
       (click)="sortDirToggle.emit()"
-      title="Toggle sort direction"
+      [title]="i18n.t().toggleSortDirTitle"
       class="inline-flex items-center justify-center p-2 rounded-lg bg-slate-950/70 border border-slate-700/80 text-amber-300 hover:text-amber-200 hover:border-amber-400/50 transition cursor-pointer"
     >
       @if (sortDir() === 'asc') {

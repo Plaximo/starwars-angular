@@ -7,6 +7,7 @@ import { IPeopleRepository } from '../../../core/api/repository.interface';
 import { PeopleBookmarkService } from './people-bookmark.service';
 import { UndoToastService } from '../../../shared/services/undo-toast.service';
 import { ErrorToastService } from '../../../shared/services/error-toast.service';
+import { TranslationService } from '../../../core/i18n/translation.service';
 import { ModalState } from '../../../shared/utils/modal-state';
 import { People } from '../../../core/models';
 import { SortField, SortDirection } from '../models/people-filter.model';
@@ -20,6 +21,7 @@ export class PeopleListViewModel {
   private readonly bookmarkService = inject(PeopleBookmarkService);
   private readonly undoToast = inject(UndoToastService);
   private readonly errorToast = inject(ErrorToastService);
+  private readonly i18n = inject(TranslationService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -193,8 +195,8 @@ export class PeopleListViewModel {
         error: (err: any) => {
           this.people.set(snapshot);
           this.errorToast.trigger(
-            `Fehler beim Speichern von "${current.name}"`,
-            err?.message || 'Änderungen wurden per Rollback zurückgesetzt.'
+            this.i18n.t().errorSavingPerson(current.name),
+            err?.message || this.i18n.t().rollbackReverted
           );
         }
       });
@@ -206,13 +208,13 @@ export class PeopleListViewModel {
       .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         error: (err: any) => {
-          this.errorToast.trigger('Fehler beim Erstellen des Charakters', err?.message);
+          this.errorToast.trigger(this.i18n.t().errorCreatingPerson, err?.message);
         }
       });
   }
 
   deletePersonWithConfirm(id: string): void {
-    const confirmed = window.confirm('Are you sure you want to delete this character record from the Holocron?');
+    const confirmed = window.confirm(this.i18n.t().deleteConfirm);
     if (confirmed) {
       this.deletePersonOptimistic(id);
     }
@@ -232,8 +234,8 @@ export class PeopleListViewModel {
         error: (err: any) => {
           this.people.set(snapshot);
           this.errorToast.trigger(
-            `Löschen von "${target?.name ?? 'Eintrag'}" fehlgeschlagen!`,
-            err?.message || 'Der Datensatz wurde per Rollback wiederhergestellt.'
+            this.i18n.t().errorDeletingPerson(target?.name ?? 'ID #' + id),
+            err?.message || this.i18n.t().rollbackRestored
           );
         }
       });
