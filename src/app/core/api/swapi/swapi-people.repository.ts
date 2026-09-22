@@ -28,10 +28,12 @@ export class SwapiPeopleRepository implements IPeopleRepository {
   private readonly peopleSubject = new BehaviorSubject<People[] | null>(null);
 
   getAll(): Observable<People[]> {
+    // check ram
     if (this.peopleSubject.value !== null) {
       return this.peopleSubject.asObservable().pipe(map(p => p ?? []));
     }
 
+    // check storage cache
     const cachedBase = this.storage.getItem<People[]>(STORAGE_KEYS.CACHED_BASE, []);
     if (this.onlineStatus.isOffline() && cachedBase.length > 0) {
       this.baseSwapiPeople = cachedBase;
@@ -39,6 +41,7 @@ export class SwapiPeopleRepository implements IPeopleRepository {
       return this.peopleSubject.asObservable().pipe(map(p => p ?? []));
     }
 
+    // fetch from api
     return this.swapi.getAllPeople().pipe(
       map(dtos => mapSwapiPeopleToPeople(dtos)),
       tap(base => {
