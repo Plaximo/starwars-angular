@@ -2,10 +2,11 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SwapiPlanetsRepository } from '../../../core/api/swapi/swapi-planets.repository';
 import { IPlanetRepository } from '../../../core/api/repository.interface';
+import { compareNullableNumbers, compareStrings, SortDirection } from '../../../shared/utils/sort.utils';
 import { Planet } from '../../../core/models';
 
 export type PlanetSortField = 'name' | 'population' | 'diameter';
-export type PlanetSortDirection = 'asc' | 'desc';
+export type PlanetSortDirection = SortDirection;
 
 @Injectable({ providedIn: 'root' })
 export class PlanetsViewmodel {
@@ -27,7 +28,7 @@ export class PlanetsViewmodel {
     const query = this.search().toLowerCase().trim();
     const climateFilter = this.climate().toLowerCase().trim();
     const sortField = this.sortBy();
-    const multiplier = this.sortDir() === 'asc' ? 1 : -1;
+    const dir = this.sortDir();
 
     // 1. Filter by search & climate
     const filtered = list.filter(planet => {
@@ -39,31 +40,26 @@ export class PlanetsViewmodel {
       return matchesSearch && matchesClimate;
     });
 
-    // 2. Sort results
+    // 2. Sort results using shared sort utilities
     return filtered.slice().sort((a, b) => {
-      if (sortField === 'name') {
-        return multiplier * a.name.localeCompare(b.name);
+      switch (sortField) {
+        case 'name':
+          return compareStrings(a.name, b.name, dir);
+        case 'population':
+          return compareNullableNumbers(
+            a.population === 'unknown' ? null : Number(a.population),
+            b.population === 'unknown' ? null : Number(b.population),
+            dir
+          );
+        case 'diameter':
+          return compareNullableNumbers(
+            a.diameter === 'unknown' ? null : Number(a.diameter),
+            b.diameter === 'unknown' ? null : Number(b.diameter),
+            dir
+          );
+        default:
+          return 0;
       }
-
-      if (sortField === 'population') {
-        const valA = a.population === 'unknown' ? null : Number(a.population);
-        const valB = b.population === 'unknown' ? null : Number(b.population);
-        if (valA === null && valB === null) return 0;
-        if (valA === null) return 1;
-        if (valB === null) return -1;
-        return multiplier * (valA - valB);
-      }
-
-      if (sortField === 'diameter') {
-        const valA = a.diameter === 'unknown' ? null : Number(a.diameter);
-        const valB = b.diameter === 'unknown' ? null : Number(b.diameter);
-        if (valA === null && valB === null) return 0;
-        if (valA === null) return 1;
-        if (valB === null) return -1;
-        return multiplier * (valA - valB);
-      }
-
-      return 0;
     });
   });
 
