@@ -4,14 +4,35 @@
     <!-- Top section: Name & Custom Badge -->
     <div>
       <div class="flex items-start justify-between gap-2 mb-3">
-        <h3 class="font-bold text-lg text-white tracking-wide group-hover:text-amber-300 transition-colors">
-          {{ person.name }}
-        </h3>
-        @if (person.isCustom) {
-          <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/30">
-            Custom
-          </span>
-        }
+        <div class="flex-1 min-w-0">
+          <h3 class="font-bold text-lg text-white tracking-wide group-hover:text-amber-300 transition-colors truncate">
+            {{ person.name }}
+          </h3>
+        </div>
+
+        <div class="flex items-center gap-1.5 shrink-0">
+          @if (person.isCustom) {
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/30">
+              Custom
+            </span>
+          }
+
+          <!-- Bookmark / Favorite Button -->
+          <button
+            type="button"
+            (click)="toggleBookmark.emit(person.id); $event.stopPropagation()"
+            [title]="isBookmarked() ? 'Remove from bookmarks' : 'Bookmark character'"
+            [class.text-amber-400]="isBookmarked()"
+            [class.bg-amber-400/15]="isBookmarked()"
+            [class.border-amber-400/40]="isBookmarked()"
+            [class.text-slate-500]="!isBookmarked()"
+            [class.hover:text-amber-300]="!isBookmarked()"
+            [class.hover:bg-slate-800]="!isBookmarked()"
+            class="p-1.5 rounded-lg border border-transparent transition-all cursor-pointer flex items-center justify-center text-sm"
+          >
+            <span>{{ isBookmarked() ? '★' : '☆' }}</span>
+          </button>
+        </div>
       </div>
 
       <!-- Badges: Gender & Birth Year -->

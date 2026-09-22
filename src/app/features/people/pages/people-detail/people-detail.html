@@ -68,6 +68,21 @@
               🎂 {{ p.birthYear }}
             </span>
 
+            <!-- Bookmark Button -->
+            <button
+              type="button"
+              (click)="vm.toggleBookmark(p.id)"
+              [class.bg-amber-400/20]="vm.isBookmarked(p.id)"
+              [class.text-amber-300]="vm.isBookmarked(p.id)"
+              [class.border-amber-400/40]="vm.isBookmarked(p.id)"
+              [class.bg-slate-800]="!vm.isBookmarked(p.id)"
+              [class.text-slate-300]="!vm.isBookmarked(p.id)"
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium border border-slate-700 transition cursor-pointer"
+            >
+              <span>{{ vm.isBookmarked(p.id) ? '★' : '☆' }}</span>
+              <span>{{ vm.isBookmarked(p.id) ? 'Saved' : 'Bookmark' }}</span>
+            </button>
+
             <!-- Edit Button -->
             <button
               type="button"

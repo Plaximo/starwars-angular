@@ -10,7 +10,9 @@ import { People } from '../../../../core/models';
 })
 export class PeopleListItem {
   people = input<People>();
+  isBookmarked = input<boolean>(false);
 
   edit = output<People>();
   delete = output<string>();
+  toggleBookmark = output<string>();
 }

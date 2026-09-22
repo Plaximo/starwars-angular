@@ -15,10 +15,13 @@
     [gender]="vm.gender()"
     [sortBy]="vm.sortBy()"
     [sortDir]="vm.sortDir()"
+    [onlyBookmarked]="vm.onlyBookmarked()"
+    [bookmarkedCount]="vm.bookmarkedCount()"
     (searchChange)="vm.setSearch($event)"
     (genderChange)="vm.setGender($event)"
     (sortByChange)="vm.setSortBy($event)"
     (sortDirToggle)="vm.toggleSortDir()"
+    (onlyBookmarkedChange)="vm.setOnlyBookmarked($event)"
   />
 
   <!-- Loading State -->
@@ -30,15 +33,35 @@
       @for (person of vm.filteredPeople(); track person.id) {
         <app-people-list-item
           [people]="person"
+          [isBookmarked]="vm.isBookmarked(person.id)"
+          (toggleBookmark)="vm.toggleBookmark($event)"
           (edit)="vm.openEditModal($event)"
           (delete)="vm.deletePersonWithConfirm($event)"
         />
       } @empty {
-        <!-- Dumb Component: Empty State -->
-        <app-people-empty-state
-          [hasActiveFilters]="vm.hasActiveFilters()"
-          (resetFilters)="vm.resetFilters()"
-        />
+        <!-- Dedicated Bookmark Empty State -->
+        @if (vm.onlyBookmarked()) {
+          <div class="col-span-full py-16 text-center space-y-3 p-8 rounded-2xl bg-slate-900/40 border border-slate-800">
+            <span class="text-4xl block">⭐</span>
+            <h3 class="text-lg font-bold text-slate-200">No Saved Characters Yet</h3>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">
+              You haven't bookmarked any characters yet. Click the star icon (☆) on any character card to add them to your saved favorites list.
+            </p>
+            <button
+              type="button"
+              (click)="vm.setOnlyBookmarked(false)"
+              class="px-4 py-2 rounded-lg text-xs font-semibold bg-amber-400/10 text-amber-300 border border-amber-400/30 hover:bg-amber-400/20 transition cursor-pointer"
+            >
+              View All Characters
+            </button>
+          </div>
+        } @else {
+          <!-- Dumb Component: Empty State -->
+          <app-people-empty-state
+            [hasActiveFilters]="vm.hasActiveFilters()"
+            (resetFilters)="vm.resetFilters()"
+          />
+        }
       }
     </div>
   }

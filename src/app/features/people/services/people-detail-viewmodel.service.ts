@@ -8,6 +8,7 @@ import { IPeopleRepository, IPlanetRepository, IStarshipRepository } from '../..
 import { SwapiPeopleRepository } from '../../../core/api/swapi/swapi-people.repository';
 import { SwapiPlanetsRepository } from '../../../core/api/swapi/swapi-planets.repository';
 import { SwapiStarshipsRepository } from '../../../core/api/swapi/swapi-starships.repository';
+import { PeopleBookmarkService } from './people-bookmark.service';
 import { PersonFormPayload } from '../models/person-form.model';
 
 @Injectable({ providedIn: 'root' })
@@ -17,6 +18,7 @@ export class PeopleDetailViewmodel {
   private readonly peopleRepo: IPeopleRepository = inject(SwapiPeopleRepository);
   private readonly planetRepo: IPlanetRepository = inject(SwapiPlanetsRepository);
   private readonly starshipRepo: IStarshipRepository = inject(SwapiStarshipsRepository);
+  private readonly bookmarkService = inject(PeopleBookmarkService);
   private readonly router = inject(Router);
 
   // Subscription management
@@ -106,6 +108,15 @@ export class PeopleDetailViewmodel {
         },
         error: (err) => console.error('Failed to delete character:', err)
       });
+  }
+
+  // Bookmark Actions
+  isBookmarked(id: string): boolean {
+    return this.bookmarkService.isBookmarked(id);
+  }
+
+  toggleBookmark(id: string): void {
+    this.bookmarkService.toggleBookmark(id);
   }
 
   private resolveRelations(person: People): void {

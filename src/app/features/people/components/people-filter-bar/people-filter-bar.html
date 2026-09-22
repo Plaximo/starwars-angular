@@ -25,6 +25,37 @@
     }
   </div>
 
+  <!-- Bookmarks Quick Toggle Segment -->
+  <div class="flex items-center p-0.5 rounded-lg bg-slate-950 border border-slate-700/80 shrink-0">
+    <button
+      type="button"
+      (click)="onlyBookmarkedChange.emit(false)"
+      [class.bg-slate-800]="!onlyBookmarked()"
+      [class.text-white]="!onlyBookmarked()"
+      [class.text-slate-400]="onlyBookmarked()"
+      class="px-2.5 py-1.5 rounded-md text-xs font-medium transition cursor-pointer"
+    >
+      All
+    </button>
+    <button
+      type="button"
+      (click)="onlyBookmarkedChange.emit(true)"
+      [class.bg-amber-400/20]="onlyBookmarked()"
+      [class.text-amber-300]="onlyBookmarked()"
+      [class.border]="onlyBookmarked()"
+      [class.border-amber-400/40]="onlyBookmarked()"
+      [class.text-slate-400]="!onlyBookmarked()"
+      class="px-2.5 py-1.5 rounded-md text-xs font-medium transition flex items-center gap-1 cursor-pointer"
+      title="Show only bookmarked characters"
+    >
+      <span>⭐</span>
+      <span>Saved</span>
+      <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-900 border border-slate-700 font-semibold text-amber-300">
+        {{ bookmarkedCount() }}
+      </span>
+    </button>
+  </div>
+
   <!-- 2. Gender Filter Dropdown -->
   <div class="flex items-center gap-2">
     <label for="gender-select" class="text-xs font-medium text-slate-400 whitespace-nowrap">Gender:</label>

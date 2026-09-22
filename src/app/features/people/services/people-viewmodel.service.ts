@@ -4,6 +4,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Observable, of, take } from 'rxjs';
 import { SwapiPeopleRepository } from '../../../core/api/swapi/swapi-people.repository';
 import { IPeopleRepository } from '../../../core/api/repository.interface';
+import { PeopleBookmarkService } from './people-bookmark.service';
 import { People } from '../../../core/models';
 import { SortField, SortDirection } from '../models/people-filter.model';
 import { PersonFormPayload } from '../models/person-form.model';
@@ -12,12 +13,18 @@ import { PersonFormPayload } from '../models/person-form.model';
 export class PeopleViewmodel {
   private readonly destroyRef = inject(DestroyRef);
   private readonly peopleRepository: IPeopleRepository = inject(SwapiPeopleRepository);
+  private readonly bookmarkService = inject(PeopleBookmarkService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   // Raw Data
   readonly people = toSignal(this.peopleRepository.getAll(), { initialValue: [] });
   readonly isLoading = computed(() => this.people().length === 0);
+
+  // Bookmarks / Favorites Delegated State
+  readonly bookmarkedIds = this.bookmarkService.bookmarkedIds;
+  readonly onlyBookmarked = signal<boolean>(false);
+  readonly bookmarkedCount = this.bookmarkService.count;
 
   // UI State Signals
   readonly search = signal<string>('');
@@ -45,12 +52,22 @@ export class PeopleViewmodel {
       if (params['sortDir'] !== undefined && ['asc', 'desc'].includes(params['sortDir'])) {
         this.sortDir.set(params['sortDir'] as SortDirection);
       }
+      if (params['favorites'] !== undefined) {
+        this.onlyBookmarked.set(params['favorites'] === 'true');
+      }
     });
   }
 
   // Derived filtered & sorted list
   readonly filteredPeople = computed(() => {
-    const list = this.people();
+    let list = this.people();
+
+    // 0. Filter by Bookmarks / Favorites
+    if (this.onlyBookmarked()) {
+      const bookmarkedSet = new Set(this.bookmarkedIds());
+      list = list.filter((p: People) => bookmarkedSet.has(p.id));
+    }
+
     const query = this.search().toLowerCase().trim();
     const selectedGender = this.gender();
     const sortField = this.sortBy();
@@ -112,12 +129,27 @@ export class PeopleViewmodel {
       !!this.search() ||
       this.gender() !== 'all' ||
       this.sortBy() !== 'name' ||
-      this.sortDir() !== 'asc'
+      this.sortDir() !== 'asc' ||
+      this.onlyBookmarked()
     );
   });
 
   readonly totalCount = computed(() => this.people().length);
   readonly filteredCount = computed(() => this.filteredPeople().length);
+
+  // Bookmarks / Favorites Actions
+  isBookmarked(id: string): boolean {
+    return this.bookmarkService.isBookmarked(id);
+  }
+
+  toggleBookmark(id: string): void {
+    this.bookmarkService.toggleBookmark(id);
+  }
+
+  setOnlyBookmarked(enabled: boolean): void {
+    this.onlyBookmarked.set(enabled);
+    this.updateUrlParams(false);
+  }
 
   // User Actions
   setSearch(query: string): void {
@@ -150,6 +182,7 @@ export class PeopleViewmodel {
     this.gender.set('all');
     this.sortBy.set('name');
     this.sortDir.set('asc');
+    this.onlyBookmarked.set(false);
     this.updateUrlParams(false);
   }
 
@@ -249,7 +282,8 @@ export class PeopleViewmodel {
       search: this.search() ? this.search() : null,
       gender: this.gender() !== 'all' ? this.gender() : null,
       sortBy: this.sortBy() !== 'name' ? this.sortBy() : null,
-      sortDir: this.sortDir() !== 'asc' ? this.sortDir() : null
+      sortDir: this.sortDir() !== 'asc' ? this.sortDir() : null,
+      favorites: this.onlyBookmarked() ? 'true' : null
     };
 
     this.router.navigate([], {
