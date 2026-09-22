@@ -6,7 +6,7 @@ import { mapSwapiPeopleToPeople } from "./mapper/people.mapper";
 import { IPeopleRepository } from "../repository.interface";
 
 @Injectable({ providedIn: 'root' })
-export class PeopleRepository implements IPeopleRepository {
+export class SwapiPeopleRepository implements IPeopleRepository {
 
   private swapi = inject(SwapiService);
 

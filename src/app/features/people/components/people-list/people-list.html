@@ -1,0 +1,7 @@
+<ul>
+  @for (people of peopleViewmodel.filteredPeople(); track people.id) {
+    <li>
+        <app-people-list-item [people]="people"></app-people-list-item>
+    </li>
+  }
+</ul>
