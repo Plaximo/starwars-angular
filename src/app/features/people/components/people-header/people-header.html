@@ -20,6 +20,17 @@
           <span>✕ Reset filters</span>
         </button>
       }
+      <!-- Split View Mode Button -->
+      <a
+        [routerLink]="['/people-side-by-side']"
+        queryParamsHandling="preserve"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-400/40 shadow-sm transition-all hover:scale-105 cursor-pointer"
+        title="Switch to Split Master-Detail View"
+      >
+        <span>◫</span>
+        <span>Split View</span>
+      </a>
+
       <!-- Create Character Button -->
       <button
         type="button"

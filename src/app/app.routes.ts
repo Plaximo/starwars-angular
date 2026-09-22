@@ -16,6 +16,20 @@ export const routes: Routes = [
       import('./features/people/pages/people-detail/people-detail').then(m => m.PeopleDetail)
   },
   {
+    path: 'people-side-by-side',
+    loadComponent: () =>
+      import('./features/people/pages/people-side-by-side/people-side-by-side').then(
+        m => m.PeopleSideBySide
+      )
+  },
+  {
+    path: 'people-side-by-side/:id',
+    loadComponent: () =>
+      import('./features/people/pages/people-side-by-side/people-side-by-side').then(
+        m => m.PeopleSideBySide
+      )
+  },
+  {
     path: '**',
     redirectTo: ''
   }
