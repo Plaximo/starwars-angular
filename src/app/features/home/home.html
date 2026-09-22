@@ -40,6 +40,32 @@
         </span>
       </button>
 
+      <!-- Online / Offline Mode Showcase Toggle -->
+      <button
+        type="button"
+        (click)="onlineStatus.toggleMockOffline()"
+        [class.bg-amber-500/20]="onlineStatus.isOffline()"
+        [class.border-amber-500/50]="onlineStatus.isOffline()"
+        [class.text-amber-300]="onlineStatus.isOffline()"
+        [class.bg-slate-950]="!onlineStatus.isOffline()"
+        [class.border-slate-800]="!onlineStatus.isOffline()"
+        [class.text-slate-400]="!onlineStatus.isOffline()"
+        class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium border hover:border-amber-400/40 transition-all cursor-pointer shadow-sm"
+        title="Toggle simulated offline mode to test offline cache fallback"
+      >
+        <span>{{ onlineStatus.isOffline() ? '📡' : '🌐' }}</span>
+        <span class="text-[11px] font-semibold hidden sm:inline">Mode:</span>
+        <span
+          [class.bg-amber-400]="onlineStatus.isOffline()"
+          [class.text-slate-950]="onlineStatus.isOffline()"
+          [class.bg-emerald-500/20]="!onlineStatus.isOffline()"
+          [class.text-emerald-400]="!onlineStatus.isOffline()"
+          class="px-1.5 py-0.5 rounded text-[10px] font-bold"
+        >
+          {{ onlineStatus.isOffline() ? 'Offline (Cache)' : 'Online' }}
+        </span>
+      </button>
+
       <!-- Segmented Tab Switcher -->
       <div class="flex items-center p-1 bg-slate-950 rounded-xl border border-slate-800 w-full sm:w-auto">
       <button
@@ -96,6 +122,26 @@
     </div>
   </div>
 </nav>
+
+  <!-- Offline Cache Banner Notification -->
+  @if (onlineStatus.isOffline()) {
+    <div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-amber-300 text-xs animate-fade-in shadow-lg">
+      <div class="flex items-center gap-2.5">
+        <span class="text-base animate-pulse">📡</span>
+        <div>
+          <span class="font-bold">Offline-Modus aktiv:</span>
+          <span class="text-amber-200/80 ml-1">Es werden die lokal zwischengespeicherten Daten (Personen, Planeten, Schiffe) aus dem Holocron-Cache angezeigt.</span>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="onlineStatus.toggleMockOffline()"
+        class="px-2.5 py-1 rounded bg-amber-400/20 hover:bg-amber-400/30 border border-amber-400/40 text-amber-200 text-[11px] font-semibold transition cursor-pointer"
+      >
+        Wieder verbinden
+      </button>
+    </div>
+  }
 </div>
 
 <!-- Active Tab Content -->

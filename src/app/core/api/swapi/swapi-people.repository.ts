@@ -1,22 +1,25 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, map, of, switchMap, tap, timer, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, switchMap, tap, timer, throwError } from 'rxjs';
 import { People } from '../../models';
 import { SwapiService } from './swapi.service';
 import { mapSwapiPeopleToPeople } from './mapper/people.mapper';
 import { IPeopleRepository } from '../repository.interface';
 import { LocalStorageService } from '../../storage/local-storage.service';
 import { NetworkSimulationService } from '../network-simulation.service';
+import { OnlineStatusService } from '../../services/online-status.service';
 
 const STORAGE_KEYS = {
   CUSTOM: 'sw_custom_people',
   EDITED: 'sw_edited_people',
-  DELETED: 'sw_deleted_people'
+  DELETED: 'sw_deleted_people',
+  CACHED_BASE: 'sw_cached_base_people'
 } as const;
 
 @Injectable({ providedIn: 'root' })
 export class SwapiPeopleRepository implements IPeopleRepository {
   private readonly swapi = inject(SwapiService);
   private readonly storage = inject(LocalStorageService);
+  private readonly onlineStatus = inject(OnlineStatusService);
   readonly simulation = inject(NetworkSimulationService);
 
   // Cached base SWAPI items
@@ -32,11 +35,28 @@ export class SwapiPeopleRepository implements IPeopleRepository {
       );
     }
 
+    // Fast-path: Check if offline and have cached data
+    const cachedBase = this.storage.getItem<People[]>(STORAGE_KEYS.CACHED_BASE, []);
+    if (this.onlineStatus.isOffline() && cachedBase.length > 0) {
+      this.baseSwapiPeople = cachedBase;
+      this.emitMergedState();
+      return this.peopleSubject.asObservable().pipe(map(p => p ?? []));
+    }
+
     return this.swapi.getAllPeople().pipe(
       map(dtos => mapSwapiPeopleToPeople(dtos)),
       tap(base => {
         this.baseSwapiPeople = base;
+        // Persist to local offline cache
+        this.storage.setItem(STORAGE_KEYS.CACHED_BASE, base);
         this.emitMergedState();
+      }),
+      catchError(err => {
+        console.warn('Network request failed, falling back to offline cache:', err);
+        const fallback = this.storage.getItem<People[]>(STORAGE_KEYS.CACHED_BASE, []);
+        this.baseSwapiPeople = fallback;
+        this.emitMergedState();
+        return of([]);
       }),
       switchMap(() => this.peopleSubject.asObservable().pipe(map(p => p ?? [])))
     );
