@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { People } from '../../../../core/models';
 import { PersonFormPayload } from '../../models/person-form.model';
@@ -8,6 +8,7 @@ import { TranslationService } from '../../../../core/i18n/translation.service';
   imports: [FormsModule],
   selector: 'app-person-form-modal',
   templateUrl: './person-form-modal.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PersonFormModal {
   readonly i18n = inject(TranslationService);

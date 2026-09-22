@@ -1,9 +1,10 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   imports: [],
   selector: 'app-people-skeleton-grid',
   templateUrl: './people-skeleton-grid.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PeopleSkeletonGrid {
   count = input<number>(8);

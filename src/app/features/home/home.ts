@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PeopleList } from '../people/pages/people-list/people-list';
@@ -16,6 +16,7 @@ export type HomeTab = 'characters' | 'planets';
   selector: 'app-home',
   styleUrl: './home.css',
   templateUrl: './home.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Home {
   private readonly router = inject(Router);

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { PeopleListViewModel } from '../../services/people-list-viewmodel.service';
 import { PeopleHeader } from '../../components/people-header/people-header';
 import { PeopleFilterBar } from '../../components/people-filter-bar/people-filter-bar';
@@ -20,6 +20,7 @@ import { TranslationService } from '../../../../core/i18n/translation.service';
   selector: 'app-people-list',
   styleUrl: './people-list.css',
   templateUrl: './people-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PeopleList {
   // Pure Smart Component: Delegates all state, modal management & actions to ViewModel!

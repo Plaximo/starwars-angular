@@ -73,9 +73,10 @@ npm run e2e
 
 ## 🏛️ Aufbau & Architekturentscheidungen
 
-1. **Angular Standalone & Signal-Architektur**:
+1. **Angular Standalone, Signals & OnPush-Strategie**:
    - Durchgängiger Verzicht auf veraltete NgModules.
-   - Konsequenter Einsatz von **Angular Signals** (`signal`, `computed`, `input`, `output`) für maximale Performance und Zero-Zone-Overhead.
+   - Konsequenter Einsatz von **Angular Signals** (`signal`, `computed`, `input`, `output`) in Kombination mit **`ChangeDetectionStrategy.OnPush` auf ausnahmslos allen Komponenten** für maximale Render-Performance und minimale Change-Detection-Zyklen.
+
 2. **ViewModel & Dumb-Component Pattern**:
    - Trennung von Präsentation und Business-Logik: Komponenten (`PeopleHeader`, `PeopleFilterBar`, `PeopleListItem`) sind reine Presentational ("Dumb") Components.
    - State, Query-Param-Synchronisation und Datenflüsse werden in dedizierten ViewModels (`PeopleListViewModel`, `PeopleDetailViewModel`) gebündelt.

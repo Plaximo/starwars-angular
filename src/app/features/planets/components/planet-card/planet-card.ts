@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Planet } from '../../../../core/models';
 
@@ -6,6 +6,7 @@ import { Planet } from '../../../../core/models';
   imports: [DecimalPipe],
   selector: 'app-planet-card',
   templateUrl: './planet-card.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlanetCard {
   planet = input.required<Planet>();

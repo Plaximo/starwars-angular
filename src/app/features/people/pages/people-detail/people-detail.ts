@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { PeopleDetailViewModel } from '../../services/people-detail-viewmodel.service';
@@ -11,6 +11,7 @@ import { TranslationService } from '../../../../core/i18n/translation.service';
   selector: 'app-people-detail',
   styleUrl: './people-detail.css',
   templateUrl: './people-detail.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PeopleDetail {
   readonly i18n = inject(TranslationService);

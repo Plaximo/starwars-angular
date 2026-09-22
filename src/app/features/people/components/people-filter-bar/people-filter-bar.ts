@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { SortDirection, SortField } from '../../models/people-filter.model';
 import { TranslationService } from '../../../../core/i18n/translation.service';
 
@@ -6,6 +6,7 @@ import { TranslationService } from '../../../../core/i18n/translation.service';
   imports: [],
   selector: 'app-people-filter-bar',
   templateUrl: './people-filter-bar.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PeopleFilterBar {
   readonly i18n = inject(TranslationService);

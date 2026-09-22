@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { PeopleListViewModel } from '../../services/people-list-viewmodel.service';
@@ -13,6 +13,7 @@ import { TranslationService } from '../../../../core/i18n/translation.service';
   selector: 'app-people-side-by-side',
   styleUrl: './people-side-by-side.css',
   templateUrl: './people-side-by-side.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PeopleSideBySide {
   readonly i18n = inject(TranslationService);
