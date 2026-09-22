@@ -9,7 +9,7 @@
     </div>
     <input
       type="text"
-      placeholder="Search by name (e.g. Luke, Vader, Organa)..."
+      [placeholder]="i18n.t().searchPlaceholder"
       [value]="search()"
       (input)="searchChange.emit($any($event.target).value)"
       class="w-full pl-10 pr-9 py-2 bg-slate-950/70 text-slate-100 placeholder-slate-500 text-sm rounded-lg border border-slate-700/80 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition"
@@ -35,7 +35,7 @@
       [class.text-slate-400]="onlyBookmarked()"
       class="px-2.5 py-1.5 rounded-md text-xs font-medium transition cursor-pointer"
     >
-      All
+      {{ i18n.t().filterAll }}
     </button>
     <button
       type="button"
@@ -46,10 +46,10 @@
       [class.border-amber-400/40]="onlyBookmarked()"
       [class.text-slate-400]="!onlyBookmarked()"
       class="px-2.5 py-1.5 rounded-md text-xs font-medium transition flex items-center gap-1 cursor-pointer"
-      title="Show only bookmarked characters"
+      [title]="i18n.t().savedBadge"
     >
       <span>⭐</span>
-      <span>Saved</span>
+      <span>{{ i18n.t().savedBadge }}</span>
       <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-900 border border-slate-700 font-semibold text-amber-300">
         {{ bookmarkedCount() }}
       </span>
@@ -58,35 +58,35 @@
 
   <!-- 2. Gender Filter Dropdown -->
   <div class="flex items-center gap-2">
-    <label for="gender-select" class="text-xs font-medium text-slate-400 whitespace-nowrap">Gender:</label>
+    <label for="gender-select" class="text-xs font-medium text-slate-400 whitespace-nowrap">{{ i18n.t().labelGender }}</label>
     <select
       id="gender-select"
       [value]="gender()"
       (change)="genderChange.emit($any($event.target).value)"
       class="bg-slate-950/70 text-slate-200 text-sm rounded-lg border border-slate-700/80 px-3 py-2 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition cursor-pointer"
     >
-      <option value="all">All Genders</option>
-      <option value="male">Male</option>
-      <option value="female">Female</option>
-      <option value="n/a">Droid / N/A</option>
-      <option value="hermaphrodite">Hermaphrodite</option>
-      <option value="other">Other</option>
+      <option value="all">{{ i18n.t().genderAll }}</option>
+      <option value="male">{{ i18n.t().genderMale }}</option>
+      <option value="female">{{ i18n.t().genderFemale }}</option>
+      <option value="n/a">{{ i18n.t().genderDroid }}</option>
+      <option value="hermaphrodite">{{ i18n.t().genderHermaphrodite }}</option>
+      <option value="other">{{ i18n.t().genderOther }}</option>
     </select>
   </div>
 
   <!-- 3. Sort Field Dropdown -->
   <div class="flex items-center gap-2">
-    <label for="sort-select" class="text-xs font-medium text-slate-400 whitespace-nowrap">Sort by:</label>
+    <label for="sort-select" class="text-xs font-medium text-slate-400 whitespace-nowrap">{{ i18n.t().labelSortBy }}</label>
     <select
       id="sort-select"
       [value]="sortBy()"
       (change)="sortByChange.emit($any($event.target).value)"
       class="bg-slate-950/70 text-slate-200 text-sm rounded-lg border border-slate-700/80 px-3 py-2 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition cursor-pointer"
     >
-      <option value="name">Name (A-Z)</option>
-      <option value="height">Height</option>
-      <option value="mass">Mass / Weight</option>
-      <option value="birthYear">Birth Year</option>
+      <option value="name">{{ i18n.t().sortByName }}</option>
+      <option value="height">{{ i18n.t().sortByHeight }}</option>
+      <option value="mass">{{ i18n.t().sortByMass }}</option>
+      <option value="birthYear">{{ i18n.t().sortByBirthYear }}</option>
     </select>
 
     <!-- 4. Sort Direction Toggle Button -->
@@ -97,11 +97,12 @@
       class="inline-flex items-center justify-center p-2 rounded-lg bg-slate-950/70 border border-slate-700/80 text-amber-300 hover:text-amber-200 hover:border-amber-400/50 transition cursor-pointer"
     >
       @if (sortDir() === 'asc') {
-        <span class="text-xs font-bold flex items-center gap-1">▲ ASC</span>
+        <span class="text-xs font-bold flex items-center gap-1">{{ i18n.t().sortAsc }}</span>
       } @else {
-        <span class="text-xs font-bold flex items-center gap-1">▼ DESC</span>
+        <span class="text-xs font-bold flex items-center gap-1">{{ i18n.t().sortDesc }}</span>
       }
     </button>
   </div>
 
 </div>
+

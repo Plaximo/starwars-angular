@@ -7,6 +7,7 @@ import { PeopleListViewModel } from '../people/services/people-list-viewmodel.se
 import { PlanetsViewmodel } from '../planets/services/planets-viewmodel.service';
 import { NetworkSimulationService } from '../../core/api/network-simulation.service';
 import { OnlineStatusService } from '../../core/services/online-status.service';
+import { TranslationService } from '../../core/i18n/translation.service';
 
 export type HomeTab = 'characters' | 'planets';
 
@@ -25,6 +26,7 @@ export class Home {
   protected readonly planetsVm = inject(PlanetsViewmodel);
   readonly simulation = inject(NetworkSimulationService);
   readonly onlineStatus = inject(OnlineStatusService);
+  readonly i18n = inject(TranslationService);
 
   readonly activeTab = signal<HomeTab>('characters');
 

@@ -5,6 +5,7 @@ import { PeopleListViewModel } from '../../services/people-list-viewmodel.servic
 import { PeopleDetailViewModel } from '../../services/people-detail-viewmodel.service';
 import { PersonFormModal } from '../../components/person-form-modal/person-form-modal';
 import { People } from '../../../../core/models';
+import { TranslationService } from '../../../../core/i18n/translation.service';
 
 @Component({
   imports: [RouterLink, PersonFormModal, ScrollingModule],
@@ -14,6 +15,8 @@ import { People } from '../../../../core/models';
   templateUrl: './people-side-by-side.html',
 })
 export class PeopleSideBySide {
+  readonly i18n = inject(TranslationService);
+
   // Bound from route parameter ':id' via withComponentInputBinding()
   id = input<string>();
 

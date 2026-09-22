@@ -1,7 +1,8 @@
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { People } from '../../../../core/models';
 import { PersonFormPayload } from '../../models/person-form.model';
+import { TranslationService } from '../../../../core/i18n/translation.service';
 
 @Component({
   imports: [FormsModule],
@@ -9,6 +10,8 @@ import { PersonFormPayload } from '../../models/person-form.model';
   templateUrl: './person-form-modal.html',
 })
 export class PersonFormModal {
+  readonly i18n = inject(TranslationService);
+
   isOpen = input<boolean>(false);
   person = input<People | null>(null);
 
@@ -49,7 +52,7 @@ export class PersonFormModal {
   onSubmit(): void {
     const trimmedName = this.name().trim();
     if (!trimmedName) {
-      this.errorMessage.set('Character name is required.');
+      this.errorMessage.set(this.i18n.t().formNameRequired);
       return;
     }
 

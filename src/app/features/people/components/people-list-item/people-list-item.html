@@ -13,7 +13,7 @@
         <div class="flex items-center gap-1.5 shrink-0">
           @if (person.isCustom) {
             <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/30">
-              Custom
+              {{ i18n.t().customBadge }}
             </span>
           }
 
@@ -21,7 +21,7 @@
           <button
             type="button"
             (click)="toggleBookmark.emit(person.id); $event.stopPropagation()"
-            [title]="isBookmarked() ? 'Remove from bookmarks' : 'Bookmark character'"
+            [title]="isBookmarked() ? i18n.t().removeBookmark : i18n.t().bookmarkAction"
             [class.text-amber-400]="isBookmarked()"
             [class.bg-amber-400/15]="isBookmarked()"
             [class.border-amber-400/40]="isBookmarked()"
@@ -48,15 +48,15 @@
       <!-- Details grid -->
       <div class="grid grid-cols-2 gap-2 text-xs text-slate-400 border-t border-slate-800/80 pt-3 mb-4">
         <div>
-          <span class="block text-slate-500 text-[10px] uppercase tracking-wider">Height</span>
+          <span class="block text-slate-500 text-[10px] uppercase tracking-wider">{{ i18n.t().sortByHeight }}</span>
           <span class="font-medium text-slate-200">
-            {{ person.heightRaw !== 'unknown' ? person.heightRaw + ' cm' : 'Unknown' }}
+            {{ person.heightRaw !== 'unknown' ? person.heightRaw + ' cm' : i18n.t().unknown }}
           </span>
         </div>
         <div>
-          <span class="block text-slate-500 text-[10px] uppercase tracking-wider">Mass</span>
+          <span class="block text-slate-500 text-[10px] uppercase tracking-wider">{{ i18n.t().sortByMass }}</span>
           <span class="font-medium text-slate-200">
-            {{ person.massRaw !== 'unknown' ? person.massRaw + ' kg' : 'Unknown' }}
+            {{ person.massRaw !== 'unknown' ? person.massRaw + ' kg' : i18n.t().unknown }}
           </span>
         </div>
       </div>
@@ -71,7 +71,7 @@
         <button
           type="button"
           (click)="edit.emit(person); $event.stopPropagation()"
-          title="Edit character"
+          [title]="i18n.t().editBtn"
           class="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-amber-300 transition-colors cursor-pointer"
         >
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +83,7 @@
         <button
           type="button"
           (click)="delete.emit(person.id); $event.stopPropagation()"
-          title="Delete character"
+          [title]="i18n.t().deleteBtn"
           class="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
         >
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,7 +97,7 @@
           queryParamsHandling="preserve"
           class="inline-flex items-center gap-0.5 font-medium text-amber-400 hover:text-amber-300 transition-colors group-hover:translate-x-0.5 transition-transform cursor-pointer ml-1"
         >
-          <span>Details</span>
+          <span>{{ i18n.t().details }}</span>
           <span>&rarr;</span>
         </a>
       </div>
@@ -105,3 +105,4 @@
 
   </div>
 }
+

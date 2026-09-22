@@ -1,6 +1,7 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { People } from '../../../../core/models';
+import { TranslationService } from '../../../../core/i18n/translation.service';
 
 @Component({
   imports: [RouterLink],
@@ -9,6 +10,8 @@ import { People } from '../../../../core/models';
   templateUrl: './people-list-item.html',
 })
 export class PeopleListItem {
+  readonly i18n = inject(TranslationService);
+
   people = input<People>();
   isBookmarked = input<boolean>(false);
 

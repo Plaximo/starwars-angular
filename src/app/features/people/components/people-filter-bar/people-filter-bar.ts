@@ -1,5 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { SortDirection, SortField } from '../../models/people-filter.model';
+import { TranslationService } from '../../../../core/i18n/translation.service';
 
 @Component({
   imports: [],
@@ -7,6 +8,8 @@ import { SortDirection, SortField } from '../../models/people-filter.model';
   templateUrl: './people-filter-bar.html',
 })
 export class PeopleFilterBar {
+  readonly i18n = inject(TranslationService);
+
   search = input<string>('');
   gender = input<string>('all');
   sortBy = input<SortField>('name');

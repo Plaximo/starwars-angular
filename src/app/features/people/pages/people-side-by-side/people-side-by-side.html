@@ -11,7 +11,7 @@
           class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 transition cursor-pointer"
         >
           <span>▦</span>
-          <span>Grid View</span>
+          <span>{{ i18n.t().gridView }}</span>
         </a>
 
         <div class="h-5 w-px bg-slate-800"></div>
@@ -19,10 +19,10 @@
         <div>
           <h1 class="text-lg font-bold text-white flex items-center gap-2">
             <span>◫</span>
-            <span>Split Master-Detail View</span>
+            <span>{{ i18n.t().splitViewTitle }}</span>
           </h1>
           <p class="text-xs text-slate-400">
-            Browse character records on the left and inspect real-time dossiers on the right.
+            {{ i18n.t().splitViewDesc }}
           </p>
         </div>
       </div>
@@ -36,12 +36,12 @@
           class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 shadow-md transition-all cursor-pointer"
         >
           <span>+</span>
-          <span>New Character</span>
+          <span>{{ i18n.t().newCharacter }}</span>
         </button>
 
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-950 border border-slate-700 text-amber-300">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          {{ listVm.filteredCount() }} of {{ listVm.totalCount() }}
+          {{ i18n.t().showingCount(listVm.filteredCount(), listVm.totalCount()) }}
         </span>
       </div>
     </header>
@@ -61,7 +61,7 @@
             </span>
             <input
               type="text"
-              placeholder="Search by name..."
+              [placeholder]="i18n.t().searchPlaceholder"
               [value]="listVm.search()"
               (input)="listVm.setSearch($any($event.target).value)"
               class="w-full pl-8 pr-8 py-1.5 bg-slate-950/70 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition"
@@ -85,12 +85,12 @@
               (change)="listVm.setGender($any($event.target).value)"
               class="flex-1 px-2.5 py-1.5 bg-slate-950/70 border border-slate-700/80 rounded-lg text-slate-300 focus:outline-none focus:border-amber-400 cursor-pointer truncate"
             >
-              <option value="all">All Genders</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="n/a">Droid / N/A</option>
-              <option value="hermaphrodite">Hermaphrodite</option>
-              <option value="other">Other</option>
+              <option value="all">{{ i18n.t().genderAll }}</option>
+              <option value="male">{{ i18n.t().genderMale }}</option>
+              <option value="female">{{ i18n.t().genderFemale }}</option>
+              <option value="n/a">{{ i18n.t().genderDroid }}</option>
+              <option value="hermaphrodite">{{ i18n.t().genderHermaphrodite }}</option>
+              <option value="other">{{ i18n.t().genderOther }}</option>
             </select>
 
             <!-- Bookmarks Quick Filter -->
@@ -103,10 +103,10 @@
               [class.bg-slate-950/70]="!listVm.onlyBookmarked()"
               [class.text-slate-400]="!listVm.onlyBookmarked()"
               class="px-2.5 py-1.5 rounded-lg border border-slate-700/80 transition flex items-center gap-1 cursor-pointer shrink-0"
-              title="Filter by bookmarked characters"
+              [title]="i18n.t().savedBadge"
             >
               <span>⭐</span>
-              <span>Saved ({{ listVm.bookmarkedCount() }})</span>
+              <span>{{ i18n.t().savedFilter(listVm.bookmarkedCount()) }}</span>
             </button>
           </div>
         </div>
@@ -121,13 +121,13 @@
         } @else if (listVm.filteredPeople().length === 0) {
           <div class="p-8 text-center bg-slate-900/40 rounded-xl border border-slate-800 text-xs text-slate-400 space-y-2">
             <span>🔍</span>
-            <p>No characters match your search filters.</p>
+            <p>{{ i18n.t().noCharactersFound }}</p>
             <button
               type="button"
               (click)="listVm.resetFilters()"
               class="px-3 py-1 bg-amber-400/10 text-amber-300 rounded border border-amber-400/30 text-[11px]"
             >
-              Reset filters
+              {{ i18n.t().resetFilters }}
             </button>
           </div>
         } @else {
@@ -156,7 +156,7 @@
                     </h3>
                     @if (person.isCustom) {
                       <span class="px-1.5 py-0.2 rounded text-[10px] bg-amber-400/10 text-amber-400 border border-amber-400/30">
-                        Custom
+                        {{ i18n.t().customBadge }}
                       </span>
                     }
                   </div>
@@ -178,7 +178,7 @@
                   <button
                     type="button"
                     (click)="listVm.toggleBookmark(person.id); $event.stopPropagation()"
-                    [title]="listVm.isBookmarked(person.id) ? 'Remove bookmark' : 'Bookmark'"
+                    [title]="listVm.isBookmarked(person.id) ? i18n.t().removeBookmark : i18n.t().bookmarkAction"
                     [class.text-amber-400]="listVm.isBookmarked(person.id)"
                     [class.text-slate-600]="!listVm.isBookmarked(person.id)"
                     class="p-1 text-sm hover:text-amber-300 transition cursor-pointer"
@@ -211,9 +211,9 @@
                 ⚡
               </div>
               <div>
-                <h3 class="text-xl font-bold text-slate-200">No Character Dossier Selected</h3>
+                <h3 class="text-xl font-bold text-slate-200">{{ i18n.t().dossierEmptyTitle }}</h3>
                 <p class="text-xs text-slate-400 max-w-md mx-auto mt-1">
-                  Click on any character card in the left archive list to load their full dossier, resolve their planetary homeworld, and inspect piloted starships in real time.
+                  {{ i18n.t().dossierEmptyDesc }}
                 </p>
               </div>
             </div>
@@ -234,13 +234,13 @@
             <div class="p-8 text-center bg-rose-950/30 border border-rose-800/60 rounded-2xl space-y-3">
               <div class="text-3xl">⚠️</div>
               <h3 class="text-lg font-bold text-rose-300">{{ detailVm.error() }}</h3>
-              <p class="text-xs text-slate-400">Record could not be retrieved from the archive.</p>
+              <p class="text-xs text-slate-400">{{ i18n.t().recordNotFound }}</p>
               <button
                 type="button"
                 (click)="clearSelection()"
                 class="px-3.5 py-1.5 text-xs font-semibold text-amber-300 bg-amber-400/10 border border-amber-400/30 rounded-lg hover:bg-amber-400/20 transition cursor-pointer"
               >
-                Clear Selection
+                {{ i18n.t().clearSelection }}
               </button>
             </div>
           } @else if (detailVm.person(); as p) {
@@ -258,11 +258,11 @@
                       </h2>
                       @if (p.isCustom) {
                         <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/30">
-                          Custom
+                          {{ i18n.t().customBadge }}
                         </span>
                       }
                     </div>
-                    <p class="text-xs text-slate-400 mt-1">Holocron Record ID: #{{ p.id }}</p>
+                    <p class="text-xs text-slate-400 mt-1">{{ i18n.t().dossierId }}: #{{ p.id }}</p>
                   </div>
 
                   <!-- Actions: Close, Bookmark, Edit, Delete -->
@@ -279,7 +279,7 @@
                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 transition cursor-pointer"
                     >
                       <span>{{ detailVm.isBookmarked(p.id) ? '★' : '☆' }}</span>
-                      <span>{{ detailVm.isBookmarked(p.id) ? 'Saved' : 'Bookmark' }}</span>
+                      <span>{{ detailVm.isBookmarked(p.id) ? i18n.t().savedBadge : i18n.t().bookmarkAction }}</span>
                     </button>
 
                     <!-- Edit Button -->
@@ -289,7 +289,7 @@
                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 transition cursor-pointer"
                     >
                       <span>✏️</span>
-                      <span>Edit</span>
+                      <span>{{ i18n.t().editBtn }}</span>
                     </button>
 
                     <!-- Delete Button -->
@@ -299,7 +299,7 @@
                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition cursor-pointer"
                     >
                       <span>🗑️</span>
-                      <span>Delete</span>
+                      <span>{{ i18n.t().deleteBtn }}</span>
                     </button>
 
                     <!-- Close Dossier Button -->
@@ -317,23 +317,23 @@
                 <!-- Attributes Grid -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                   <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-                    <span class="text-slate-500 block text-[10px] uppercase font-medium">Height</span>
+                    <span class="text-slate-500 block text-[10px] uppercase font-medium">{{ i18n.t().sortByHeight }}</span>
                     <span class="text-sm font-bold text-slate-100">
-                      {{ p.heightRaw !== 'unknown' ? p.heightRaw + ' cm' : 'Unknown' }}
+                      {{ p.heightRaw !== 'unknown' ? p.heightRaw + ' cm' : i18n.t().unknown }}
                     </span>
                   </div>
                   <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-                    <span class="text-slate-500 block text-[10px] uppercase font-medium">Mass</span>
+                    <span class="text-slate-500 block text-[10px] uppercase font-medium">{{ i18n.t().sortByMass }}</span>
                     <span class="text-sm font-bold text-slate-100">
-                      {{ p.massRaw !== 'unknown' ? p.massRaw + ' kg' : 'Unknown' }}
+                      {{ p.massRaw !== 'unknown' ? p.massRaw + ' kg' : i18n.t().unknown }}
                     </span>
                   </div>
                   <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-                    <span class="text-slate-500 block text-[10px] uppercase font-medium">Eye Color</span>
+                    <span class="text-slate-500 block text-[10px] uppercase font-medium">{{ i18n.t().eyeColor }}</span>
                     <span class="text-sm font-bold text-slate-100 capitalize">{{ p.eyeColor }}</span>
                   </div>
                   <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-                    <span class="text-slate-500 block text-[10px] uppercase font-medium">Hair Color</span>
+                    <span class="text-slate-500 block text-[10px] uppercase font-medium">{{ i18n.t().hairColor }}</span>
                     <span class="text-sm font-bold text-slate-100 capitalize">{{ p.hairColor }}</span>
                   </div>
                 </div>
@@ -345,10 +345,10 @@
                   <div class="flex items-center justify-between gap-4 border-b border-slate-800 pb-3">
                     <div class="flex items-center gap-2">
                       <span class="text-xl">🪐</span>
-                      <h3 class="text-base font-bold text-white">Homeworld (Planet)</h3>
+                      <h3 class="text-base font-bold text-white">{{ i18n.t().homeworldTitle }}</h3>
                     </div>
                     <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/30">
-                      Resolved Entity
+                      {{ i18n.t().resolvedEntity }}
                     </span>
                   </div>
 
@@ -356,28 +356,28 @@
                     <div class="flex items-center justify-between">
                       <div>
                         <h4 class="text-base font-bold text-amber-300">{{ planet.name }}</h4>
-                        <p class="text-xs text-slate-400 capitalize">Terrain: {{ planet.terrain }}</p>
+                        <p class="text-xs text-slate-400 capitalize">{{ i18n.t().terrain }}: {{ planet.terrain }}</p>
                       </div>
                       <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300 capitalize">
-                        Climate: <strong class="text-amber-200">{{ planet.climate }}</strong>
+                        {{ i18n.t().climate }}: <strong class="text-amber-200">{{ planet.climate }}</strong>
                       </span>
                     </div>
 
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-300 pt-2 border-t border-slate-800/80">
                       <div>
-                        <span class="text-slate-500 text-[10px] block uppercase">Population</span>
+                        <span class="text-slate-500 text-[10px] block uppercase">{{ i18n.t().population }}</span>
                         <span class="font-medium text-slate-200">{{ planet.population }}</span>
                       </div>
                       <div>
-                        <span class="text-slate-500 text-[10px] block uppercase">Diameter</span>
+                        <span class="text-slate-500 text-[10px] block uppercase">{{ i18n.t().diameter }}</span>
                         <span class="font-medium text-slate-200">{{ planet.diameter }} km</span>
                       </div>
                       <div>
-                        <span class="text-slate-500 text-[10px] block uppercase">Gravity</span>
+                        <span class="text-slate-500 text-[10px] block uppercase">{{ i18n.t().gravity }}</span>
                         <span class="font-medium text-slate-200">{{ planet.gravity }}</span>
                       </div>
                       <div>
-                        <span class="text-slate-500 text-[10px] block uppercase">Orbital Period</span>
+                        <span class="text-slate-500 text-[10px] block uppercase">{{ i18n.t().orbitalPeriod }}</span>
                         <span class="font-medium text-slate-200">{{ planet.orbital_period }}d</span>
                       </div>
                     </div>
@@ -393,10 +393,10 @@
                   <div class="flex items-center justify-between gap-4 border-b border-slate-800 pb-3">
                     <div class="flex items-center gap-2">
                       <span class="text-xl">🚀</span>
-                      <h3 class="text-base font-bold text-white">Piloted Starships</h3>
+                      <h3 class="text-base font-bold text-white">{{ i18n.t().starshipsTitle }}</h3>
                     </div>
                     <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30">
-                      {{ detailVm.starships().length }} Registered
+                      {{ i18n.t().starshipsRegistered(detailVm.starships().length) }}
                     </span>
                   </div>
 
@@ -414,11 +414,11 @@
                         </div>
                         <div class="grid grid-cols-2 gap-1 text-[11px] text-slate-300 pt-1 border-t border-slate-800/60">
                           <div>
-                            <span class="text-slate-500 text-[9px] block uppercase">Hyperdrive</span>
+                            <span class="text-slate-500 text-[9px] block uppercase">{{ i18n.t().hyperdrive }}</span>
                             <span class="font-semibold text-amber-400">{{ ship.hyperdrive_rating }}</span>
                           </div>
                           <div>
-                            <span class="text-slate-500 text-[9px] block uppercase">Crew</span>
+                            <span class="text-slate-500 text-[9px] block uppercase">{{ i18n.t().crew }}</span>
                             <span class="font-medium text-slate-300">{{ ship.crew }}</span>
                           </div>
                         </div>
@@ -454,13 +454,13 @@
     <!-- Floating Undo Toast for Deleted Entries -->
     @if (listVm.lastDeletedId()) {
       <div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 shadow-2xl text-slate-100 text-sm animate-bounce">
-        <span>🗑️ Character record removed.</span>
+        <span>🗑️ {{ i18n.t().undoRecordRemoved }}</span>
         <button
           type="button"
           (click)="listVm.undoLastDelete()"
           class="px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-bold text-xs hover:bg-amber-300 transition cursor-pointer"
         >
-          Undo
+          {{ i18n.t().undoBtn }}
         </button>
         <button
           type="button"
@@ -477,7 +477,7 @@
       <div class="fixed bottom-6 left-6 z-50 flex items-start gap-3 p-4 rounded-xl bg-slate-900/95 border border-rose-500/60 shadow-2xl shadow-rose-950/40 text-slate-100 max-w-md backdrop-blur-md">
         <span class="text-xl">⚠️</span>
         <div class="flex-1">
-          <h4 class="text-xs font-bold text-rose-400 uppercase tracking-wider">Rollback durchgeführt</h4>
+          <h4 class="text-xs font-bold text-rose-400 uppercase tracking-wider">{{ i18n.t().rollbackTitle }}</h4>
           <p class="text-sm font-semibold text-white mt-0.5">{{ listVm.errorMessage() || detailVm.errorMessage() }}</p>
           @if (listVm.errorDetails() || detailVm.errorDetails()) {
             <p class="text-xs text-slate-400 mt-1">{{ listVm.errorDetails() || detailVm.errorDetails() }}</p>
@@ -494,3 +494,4 @@
     }
   </div>
 </main>
+

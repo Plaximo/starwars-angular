@@ -6,6 +6,7 @@ import { PeopleListItem } from '../../components/people-list-item/people-list-it
 import { PeopleSkeletonGrid } from '../../components/people-skeleton-grid/people-skeleton-grid';
 import { PeopleEmptyState } from '../../components/people-empty-state/people-empty-state';
 import { PersonFormModal } from '../../components/person-form-modal/person-form-modal';
+import { TranslationService } from '../../../../core/i18n/translation.service';
 
 @Component({
   imports: [
@@ -23,4 +24,6 @@ import { PersonFormModal } from '../../components/person-form-modal/person-form-
 export class PeopleList {
   // Pure Smart Component: Delegates all state, modal management & actions to ViewModel!
   protected readonly vm = inject(PeopleListViewModel);
+  readonly i18n = inject(TranslationService);
 }
+

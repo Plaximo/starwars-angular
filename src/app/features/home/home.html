@@ -7,13 +7,24 @@
         ⚡
       </div>
       <div>
-        <span class="text-[10px] tracking-widest uppercase font-semibold text-amber-400 block">Holocron Database</span>
-        <span class="text-sm font-bold text-slate-100">Star Wars Galactic Archives</span>
+        <span class="text-[10px] tracking-widest uppercase font-semibold text-amber-400 block">{{ i18n.t().brandHolocron }}</span>
+        <span class="text-sm font-bold text-slate-100">{{ i18n.t().brandTitle }}</span>
       </div>
     </div>
 
     <!-- Actions & Segmented Tab Switcher -->
-    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+    <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+      <!-- Language Switcher Toggle -->
+      <button
+        type="button"
+        (click)="i18n.toggleLanguage()"
+        class="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-xs font-semibold bg-slate-950 border border-slate-800 hover:border-amber-400/50 text-slate-300 hover:text-white transition-all cursor-pointer shadow-sm"
+        [title]="i18n.isGerman() ? 'Switch to English' : 'Auf Deutsch umschalten'"
+      >
+        <span>{{ i18n.isGerman() ? '🇩🇪' : '🇬🇧' }}</span>
+        <span class="font-bold text-amber-300">{{ i18n.lang().toUpperCase() }}</span>
+      </button>
+
       <!-- Dev Network Simulation Toggle (Showcase for Optimistic Updates with Rollback) -->
       <button
         type="button"
@@ -62,7 +73,7 @@
           [class.text-emerald-400]="!onlineStatus.isOffline()"
           class="px-1.5 py-0.5 rounded text-[10px] font-bold"
         >
-          {{ onlineStatus.isOffline() ? 'Offline (Cache)' : 'Online' }}
+          {{ onlineStatus.isOffline() ? i18n.t().modeOffline : i18n.t().modeOnline }}
         </span>
       </button>
 
@@ -82,7 +93,7 @@
         class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer"
       >
         <span>👥</span>
-        <span>Characters</span>
+        <span>{{ i18n.t().tabCharacters }}</span>
         <span
           [class.bg-slate-950]="activeTab() === 'characters'"
           [class.text-amber-300]="activeTab() === 'characters'"
@@ -108,7 +119,7 @@
         class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer"
       >
         <span>🪐</span>
-        <span>Planets</span>
+        <span>{{ i18n.t().tabPlanets }}</span>
         <span
           [class.bg-slate-950]="activeTab() === 'planets'"
           [class.text-amber-300]="activeTab() === 'planets'"
@@ -129,8 +140,8 @@
       <div class="flex items-center gap-2.5">
         <span class="text-base animate-pulse">📡</span>
         <div>
-          <span class="font-bold">Offline-Modus aktiv:</span>
-          <span class="text-amber-200/80 ml-1">Es werden die lokal zwischengespeicherten Daten (Personen, Planeten, Schiffe) aus dem Holocron-Cache angezeigt.</span>
+          <span class="font-bold">{{ i18n.isGerman() ? 'Offline-Modus aktiv:' : 'Offline Mode Active:' }}</span>
+          <span class="text-amber-200/80 ml-1">{{ i18n.t().modeOfflineBanner }}</span>
         </div>
       </div>
       <button
@@ -138,7 +149,7 @@
         (click)="onlineStatus.toggleMockOffline()"
         class="px-2.5 py-1 rounded bg-amber-400/20 hover:bg-amber-400/30 border border-amber-400/40 text-amber-200 text-[11px] font-semibold transition cursor-pointer"
       >
-        Wieder verbinden
+        {{ i18n.t().reconnect }}
       </button>
     </div>
   }

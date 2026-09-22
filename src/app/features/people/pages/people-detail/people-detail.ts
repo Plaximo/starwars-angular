@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { PeopleDetailViewModel } from '../../services/people-detail-viewmodel.service';
 import { PersonFormModal } from '../../components/person-form-modal/person-form-modal';
+import { TranslationService } from '../../../../core/i18n/translation.service';
 
 @Component({
   imports: [RouterLink, DatePipe, PersonFormModal],
@@ -12,6 +13,7 @@ import { PersonFormModal } from '../../components/person-form-modal/person-form-
   templateUrl: './people-detail.html',
 })
 export class PeopleDetail {
+  readonly i18n = inject(TranslationService);
   id = input<string>();
 
   // Smart Component: Delegates all state, modal management & actions to ViewModel!

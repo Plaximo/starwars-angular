@@ -1,5 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslationService } from '../../../../core/i18n/translation.service';
 
 @Component({
   imports: [RouterLink],
@@ -7,6 +8,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './people-header.html',
 })
 export class PeopleHeader {
+  readonly i18n = inject(TranslationService);
 
   totalCount = input.required<number>();
   filteredCount = input.required<number>();

@@ -43,16 +43,16 @@
         @if (vm.onlyBookmarked()) {
           <div class="col-span-full py-16 text-center space-y-3 p-8 rounded-2xl bg-slate-900/40 border border-slate-800">
             <span class="text-4xl block">⭐</span>
-            <h3 class="text-lg font-bold text-slate-200">No Saved Characters Yet</h3>
+            <h3 class="text-lg font-bold text-slate-200">{{ i18n.t().noBookmarksFoundTitle }}</h3>
             <p class="text-xs text-slate-400 max-w-sm mx-auto">
-              You haven't bookmarked any characters yet. Click the star icon (☆) on any character card to add them to your saved favorites list.
+              {{ i18n.t().noBookmarksFoundDesc }}
             </p>
             <button
               type="button"
               (click)="vm.setOnlyBookmarked(false)"
               class="px-4 py-2 rounded-lg text-xs font-semibold bg-amber-400/10 text-amber-300 border border-amber-400/30 hover:bg-amber-400/20 transition cursor-pointer"
             >
-              View All Characters
+              {{ i18n.t().viewAllCharacters }}
             </button>
           </div>
         } @else {
@@ -77,13 +77,13 @@
   <!-- Floating Undo Toast for Deleted Entries -->
   @if (vm.lastDeletedId()) {
     <div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 shadow-2xl text-slate-100 text-sm animate-bounce">
-      <span>🗑️ Character record removed.</span>
+      <span>🗑️ {{ i18n.t().undoRecordRemoved }}</span>
       <button
         type="button"
         (click)="vm.undoLastDelete()"
         class="px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-bold text-xs hover:bg-amber-300 transition cursor-pointer"
       >
-        Undo
+        {{ i18n.t().undoBtn }}
       </button>
       <button
         type="button"
@@ -100,7 +100,7 @@
     <div class="fixed bottom-6 left-6 z-50 flex items-start gap-3 p-4 rounded-xl bg-slate-900/95 border border-rose-500/60 shadow-2xl shadow-rose-950/40 text-slate-100 max-w-md backdrop-blur-md">
       <span class="text-xl">⚠️</span>
       <div class="flex-1">
-        <h4 class="text-xs font-bold text-rose-400 uppercase tracking-wider">Rollback durchgeführt</h4>
+        <h4 class="text-xs font-bold text-rose-400 uppercase tracking-wider">{{ i18n.t().rollbackTitle }}</h4>
         <p class="text-sm font-semibold text-white mt-0.5">{{ vm.errorMessage() }}</p>
         @if (vm.errorDetails()) {
           <p class="text-xs text-slate-400 mt-1">{{ vm.errorDetails() }}</p>
@@ -115,5 +115,6 @@
       </button>
     </div>
   }
+
 
 </div>

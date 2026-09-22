@@ -1,8 +1,8 @@
 <div class="col-span-full py-16 text-center bg-slate-900/40 rounded-2xl border border-slate-800/80">
   <div class="text-4xl mb-3">🪐</div>
-  <h3 class="text-lg font-semibold text-slate-200">No galactic records found</h3>
+  <h3 class="text-lg font-semibold text-slate-200">{{ i18n.t().noCharactersFound }}</h3>
   <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-    No characters match your current combination of search query, gender filter, and sort order.
+    {{ i18n.t().noCharactersFound }}
   </p>
   @if (hasActiveFilters()) {
     <button
@@ -10,7 +10,8 @@
       (click)="resetFilters.emit()"
       class="mt-4 px-4 py-2 text-xs font-semibold text-amber-300 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 rounded-lg transition cursor-pointer"
     >
-      Clear all filters
+      {{ i18n.t().clearAllFilters }}
     </button>
   }
 </div>
+
