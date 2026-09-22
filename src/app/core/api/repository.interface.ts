@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { People } from "../models";
+import { People, Planet, Starship } from '../models';
 
 export interface IRepository<T> {
   getAll: () => Observable<T[]>;
@@ -9,3 +9,11 @@ export interface IRepository<T> {
 }
 
 export interface IPeopleRepository extends IRepository<People> {}
+
+export interface IPlanetRepository extends IRepository<Planet> {
+  getByIdOrUrl: (idOrUrl: string) => Observable<Planet>;
+}
+
+export interface IStarshipRepository extends IRepository<Starship> {
+  getByIdOrUrl: (idOrUrl: string) => Observable<Starship>;
+}

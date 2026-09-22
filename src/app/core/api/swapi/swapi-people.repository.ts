@@ -7,14 +7,24 @@ import { IPeopleRepository } from "../repository.interface";
 
 @Injectable({ providedIn: 'root' })
 export class SwapiPeopleRepository implements IPeopleRepository {
-
   private swapi = inject(SwapiService);
 
   getAll(): Observable<People[]> {
-    return this.swapi.getAllPeople().pipe(map(dtos => mapSwapiPeopleToPeople(dtos)));
+    return this.swapi.getAllPeople().pipe(
+      map(dtos => mapSwapiPeopleToPeople(dtos))
+    );
   }
+
   getById(id: string): Observable<People> {
-    throw new Error("Method not implemented.");
+    return this.getAll().pipe(
+      map(all => {
+        const found = all.find(p => p.id === id);
+        if (!found) {
+          throw new Error(`Person with id "${id}" was not found.`);
+        }
+        return found;
+      })
+    );
   }
 
   update?(id: string, data: Partial<People>): Observable<People> {
