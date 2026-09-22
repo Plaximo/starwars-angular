@@ -1,6 +1,6 @@
 # 🌌 Star Wars Galactic Archives (Holocron)
 
-Eine moderne Angular-Webanwendung zur Erkundung, Filterung und Verwaltung von Helden und Legenden aus dem Star Wars-Universum (SWAPI). Entwickelt als Coding-Challenge für Medienwerft.
+Eine moderne Angular-Webanwendung zur Erkundung, Filterung und Verwaltung von Helden und Legenden aus dem Star Wars-Universum (SWAPI). Entwickelt als Coding-Challenge.
 
 ---
 
@@ -8,7 +8,7 @@ Eine moderne Angular-Webanwendung zur Erkundung, Filterung und Verwaltung von He
 
 ### Voraussetzungen
 
-- **Node.js** (v18+)
+- **Node.js** (v22+)
 - **npm** (v9+)
 
 ### Installation & Start
@@ -29,6 +29,10 @@ npm run e2e
 ```
 
 ---
+
+## Test Steps
+
+### Refactor and split files into smaller files so its more readable
 
 ## 📋 Anforderungen & Umsetzungsstatus
 
