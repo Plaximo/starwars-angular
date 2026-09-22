@@ -1,11 +1,12 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, of, take } from 'rxjs';
 import { SwapiPeopleRepository } from '../../../core/api/swapi/swapi-people.repository';
 import { IPeopleRepository } from '../../../core/api/repository.interface';
 import { PeopleBookmarkService } from './people-bookmark.service';
 import { UndoToastService } from '../../../shared/services/undo-toast.service';
+import { ErrorToastService } from '../../../shared/services/error-toast.service';
 import { ModalState } from '../../../shared/utils/modal-state';
 import { compareAlphanumeric, compareNullableNumbers, compareStrings } from '../../../shared/utils/sort.utils';
 import { People } from '../../../core/models';
@@ -18,15 +19,17 @@ export class PeopleListViewModel {
   private readonly peopleRepository: IPeopleRepository = inject(SwapiPeopleRepository);
   private readonly bookmarkService = inject(PeopleBookmarkService);
   private readonly undoToast = inject(UndoToastService);
+  private readonly errorToast = inject(ErrorToastService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   // Sub-State Managers (Extracted for clean modularity & reuse)
   private readonly modalState = new ModalState<People>();
 
-  // Raw Data
-  readonly people = toSignal(this.peopleRepository.getAll(), { initialValue: [] });
-  readonly isLoading = computed(() => this.people().length === 0);
+  // Raw Data (Writable Signal for Optimistic UI Updates & Snapshot Rollback)
+  readonly people = signal<People[]>([]);
+  readonly isInitialLoading = signal<boolean>(true);
+  readonly isLoading = computed(() => this.isInitialLoading() && this.people().length === 0);
 
   // Bookmarks / Favorites Delegated State
   readonly bookmarkedIds = this.bookmarkService.bookmarkedIds;
@@ -46,7 +49,22 @@ export class PeopleListViewModel {
   // Undo Toast State (delegated)
   readonly lastDeletedId = this.undoToast.activeUndoId;
 
+  // Error / Rollback Toast State
+  readonly errorMessage = this.errorToast.activeMessage;
+  readonly errorDetails = this.errorToast.activeDetails;
+
   constructor() {
+    // Continuous sync from Repository stream
+    this.peopleRepository
+      .getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.people.set(data);
+          this.isInitialLoading.set(false);
+        }
+      });
+
     // Synchronize initial state from URL Query Parameters
     this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['search'] !== undefined) this.search.set(params['search']);
@@ -200,25 +218,79 @@ export class PeopleListViewModel {
 
   savePerson(payload: PersonFormPayload): void {
     const current = this.selectedPerson();
-    const op$ = current
-      ? this.updatePerson(current.id, payload)
-      : this.createPerson(payload);
+    this.closeModal();
 
-    op$.pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => this.closeModal(),
-      error: err => console.error('Failed to save person:', err)
-    });
+    if (current) {
+      // --- Optimistic Update for Edit ---
+      const previousList = this.people();
+      const updatedOptimistic: People = {
+        ...current,
+        ...payload,
+        edited: new Date().toISOString()
+      };
+
+      // 1. Optimistic Update (Immediate UI response)
+      this.people.update(list => list.map(p => p.id === current.id ? updatedOptimistic : p));
+
+      // 2. Async Persistence
+      this.updatePerson(current.id, payload)
+        .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            // Succeeded: UI already up-to-date
+          },
+          error: (err: any) => {
+            // 3. Rollback on Failure: restore previous snapshot
+            this.people.set(previousList);
+            this.errorToast.trigger(
+              `Fehler beim Speichern von "${current.name}"`,
+              err?.message || 'Änderungen wurden per Rollback zurückgesetzt.'
+            );
+          }
+        });
+    } else {
+      // Create new character
+      this.createPerson(payload)
+        .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {},
+          error: (err: any) => {
+            this.errorToast.trigger(
+              'Fehler beim Erstellen des Charakters',
+              err?.message || 'Server nicht erreichbar.'
+            );
+          }
+        });
+    }
   }
 
   deletePersonWithConfirm(id: string): void {
     const confirmed = window.confirm('Are you sure you want to delete this character record from the Holocron?');
     if (!confirmed) return;
 
+    // --- Optimistic Delete ---
+    const previousList = this.people();
+    const deletedPerson = previousList.find(p => p.id === id);
+
+    // 1. Optimistic Update: Immediately remove from list
+    this.people.update(list => list.filter(p => p.id !== id));
+
+    // 2. Async Persistence
     this.deletePerson(id)
       .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => this.undoToast.trigger(id),
-        error: err => console.error('Failed to delete person:', err)
+        next: () => {
+          // Success: trigger undo toast
+          this.undoToast.trigger(id);
+        },
+        error: (err: any) => {
+          // 3. Rollback on Failure: restore previous snapshot
+          this.people.set(previousList);
+          this.errorToast.trigger(
+            `Löschen von "${deletedPerson?.name ?? 'Eintrag'}" fehlgeschlagen!`,
+            err?.message || 'Der Datensatz wurde per Rollback wiederhergestellt.'
+          );
+        }
       });
   }
 
@@ -236,6 +308,10 @@ export class PeopleListViewModel {
 
   dismissUndo(): void {
     this.undoToast.dismiss();
+  }
+
+  dismissError(): void {
+    this.errorToast.dismiss();
   }
 
   // URL Query Sync

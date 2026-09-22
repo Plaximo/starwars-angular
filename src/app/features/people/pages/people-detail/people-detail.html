@@ -267,4 +267,25 @@
     </div>
   }
 
+  <!-- Floating Error / Rollback Toast Notification -->
+  @if (vm.errorMessage()) {
+    <div class="fixed bottom-6 left-6 z-50 flex items-start gap-3 p-4 rounded-xl bg-slate-900/95 border border-rose-500/60 shadow-2xl shadow-rose-950/40 text-slate-100 max-w-md backdrop-blur-md">
+      <span class="text-xl">⚠️</span>
+      <div class="flex-1">
+        <h4 class="text-xs font-bold text-rose-400 uppercase tracking-wider">Rollback durchgeführt</h4>
+        <p class="text-sm font-semibold text-white mt-0.5">{{ vm.errorMessage() }}</p>
+        @if (vm.errorDetails()) {
+          <p class="text-xs text-slate-400 mt-1">{{ vm.errorDetails() }}</p>
+        }
+      </div>
+      <button
+        type="button"
+        (click)="vm.dismissError()"
+        class="text-slate-400 hover:text-white text-xs p-1 cursor-pointer"
+      >
+        ✕
+      </button>
+    </div>
+  }
+
 </div>

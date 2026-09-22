@@ -10,6 +10,7 @@ import { SwapiPlanetsRepository } from '../../../core/api/swapi/swapi-planets.re
 import { SwapiStarshipsRepository } from '../../../core/api/swapi/swapi-starships.repository';
 import { PeopleBookmarkService } from './people-bookmark.service';
 import { PersonFormPayload } from '../models/person-form.model';
+import { ErrorToastService } from '../../../shared/services/error-toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class PeopleDetailViewModel {
@@ -19,6 +20,7 @@ export class PeopleDetailViewModel {
   private readonly planetRepo: IPlanetRepository = inject(SwapiPlanetsRepository);
   private readonly starshipRepo: IStarshipRepository = inject(SwapiStarshipsRepository);
   private readonly bookmarkService = inject(PeopleBookmarkService);
+  private readonly errorToast = inject(ErrorToastService);
   private readonly router = inject(Router);
 
   // Subscription management
@@ -75,20 +77,47 @@ export class PeopleDetailViewModel {
     this.isEditModalOpen.set(false);
   }
 
+  // Error / Rollback Toast State
+  readonly errorMessage = this.errorToast.activeMessage;
+  readonly errorDetails = this.errorToast.activeDetails;
+
+  dismissError(): void {
+    this.errorToast.dismiss();
+  }
+
   saveEdit(payload: PersonFormPayload): void {
     const p = this.person();
     if (!p) return;
 
+    const previousPerson = p;
+    const updatedOptimistic: People = {
+      ...p,
+      ...payload,
+      edited: new Date().toISOString()
+    };
+
+    // 1. Optimistic Update: Immediately reflect edited attributes and update relations
+    this.person.set(updatedOptimistic);
+    this.closeEditModal();
+    this.resolveRelations(updatedOptimistic);
+
+    // 2. Async Server Persistence
     this.peopleRepo
       .update(p.id, payload)
       .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (updated) => {
           this.person.set(updated);
-          this.closeEditModal();
-          this.resolveRelations(updated);
         },
-        error: (err) => console.error('Failed to update character:', err)
+        error: (err: any) => {
+          // 3. Rollback on Failure: Restore previous snapshot and re-resolve previous relations
+          this.person.set(previousPerson);
+          this.resolveRelations(previousPerson);
+          this.errorToast.trigger(
+            `Fehler beim Speichern von "${previousPerson.name}"`,
+            err?.message || 'Dossier-Änderungen wurden rückgängig gemacht (Rollback).'
+          );
+        }
       });
   }
 
@@ -106,7 +135,12 @@ export class PeopleDetailViewModel {
         next: () => {
           this.router.navigate(['/'], { queryParamsHandling: 'preserve' });
         },
-        error: (err) => console.error('Failed to delete character:', err)
+        error: (err: any) => {
+          this.errorToast.trigger(
+            `Löschen von "${p.name}" fehlgeschlagen!`,
+            err?.message || 'Der Eintrag konnte nicht gelöscht werden.'
+          );
+        }
       });
   }
 

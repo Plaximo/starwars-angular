@@ -12,8 +12,36 @@
       </div>
     </div>
 
-    <!-- Segmented Tab Switcher -->
-    <div class="flex items-center p-1 bg-slate-950 rounded-xl border border-slate-800 w-full sm:w-auto">
+    <!-- Actions & Segmented Tab Switcher -->
+    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+      <!-- Dev Network Simulation Toggle (Showcase for Optimistic Updates with Rollback) -->
+      <button
+        type="button"
+        (click)="simulation.toggleSimulateError()"
+        [class.bg-rose-500/20]="simulation.simulateError()"
+        [class.border-rose-500/50]="simulation.simulateError()"
+        [class.text-rose-300]="simulation.simulateError()"
+        [class.bg-slate-950]="!simulation.simulateError()"
+        [class.border-slate-800]="!simulation.simulateError()"
+        [class.text-slate-400]="!simulation.simulateError()"
+        class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium border hover:border-amber-400/40 transition-all cursor-pointer shadow-sm"
+        title="Toggle simulated network error (HTTP 500) to test Optimistic Updates with Rollback"
+      >
+        <span [class.animate-pulse]="simulation.simulateError()">⚡</span>
+        <span class="text-[11px] font-semibold">Sim Error:</span>
+        <span
+          [class.bg-rose-500]="simulation.simulateError()"
+          [class.text-white]="simulation.simulateError()"
+          [class.bg-slate-800]="!simulation.simulateError()"
+          [class.text-slate-400]="!simulation.simulateError()"
+          class="px-1.5 py-0.5 rounded text-[10px] font-bold"
+        >
+          {{ simulation.simulateError() ? 'ON' : 'OFF' }}
+        </span>
+      </button>
+
+      <!-- Segmented Tab Switcher -->
+      <div class="flex items-center p-1 bg-slate-950 rounded-xl border border-slate-800 w-full sm:w-auto">
       <button
         type="button"
         (click)="setTab('characters')"
@@ -66,7 +94,8 @@
         </span>
       </button>
     </div>
-  </nav>
+  </div>
+</nav>
 </div>
 
 <!-- Active Tab Content -->

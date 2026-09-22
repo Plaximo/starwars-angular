@@ -7,6 +7,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './people-header.html',
 })
 export class PeopleHeader {
+
   totalCount = input.required<number>();
   filteredCount = input.required<number>();
   hasActiveFilters = input<boolean>(false);

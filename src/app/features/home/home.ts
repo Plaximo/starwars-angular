@@ -5,6 +5,7 @@ import { PeopleList } from '../people/pages/people-list/people-list';
 import { PlanetsList } from '../planets/components/planets-list/planets-list';
 import { PeopleListViewModel } from '../people/services/people-list-viewmodel.service';
 import { PlanetsViewmodel } from '../planets/services/planets-viewmodel.service';
+import { NetworkSimulationService } from '../../core/api/network-simulation.service';
 
 export type HomeTab = 'characters' | 'planets';
 
@@ -21,6 +22,7 @@ export class Home {
 
   protected readonly peopleVm = inject(PeopleListViewModel);
   protected readonly planetsVm = inject(PlanetsViewmodel);
+  readonly simulation = inject(NetworkSimulationService);
 
   readonly activeTab = signal<HomeTab>('characters');
 

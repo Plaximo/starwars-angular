@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, map, of, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map, of, switchMap, tap, timer, throwError } from 'rxjs';
 import { People } from '../../models';
 import { SwapiService } from './swapi.service';
 import { mapSwapiPeopleToPeople } from './mapper/people.mapper';
 import { IPeopleRepository } from '../repository.interface';
 import { LocalStorageService } from '../../storage/local-storage.service';
+import { NetworkSimulationService } from '../network-simulation.service';
 
 const STORAGE_KEYS = {
   CUSTOM: 'sw_custom_people',
@@ -16,6 +17,7 @@ const STORAGE_KEYS = {
 export class SwapiPeopleRepository implements IPeopleRepository {
   private readonly swapi = inject(SwapiService);
   private readonly storage = inject(LocalStorageService);
+  readonly simulation = inject(NetworkSimulationService);
 
   // Cached base SWAPI items
   private baseSwapiPeople: People[] | null = null;
@@ -53,6 +55,14 @@ export class SwapiPeopleRepository implements IPeopleRepository {
   }
 
   create(data: Omit<People, 'id' | 'url'>): Observable<People> {
+    const delayMs = this.simulation.simulateDelayMs();
+
+    if (this.simulation.simulateError()) {
+      return timer(delayMs).pipe(
+        switchMap(() => throwError(() => new Error('Simulierter Netzwerkfehler beim Erstellen (HTTP 500: Server nicht erreichbar).')))
+      );
+    }
+
     const id = `custom_${Date.now()}`;
     const newPerson: People = {
       ...data,
@@ -67,11 +77,21 @@ export class SwapiPeopleRepository implements IPeopleRepository {
     customList.unshift(newPerson);
     this.storage.setItem(STORAGE_KEYS.CUSTOM, customList);
 
-    this.emitMergedState();
-    return of(newPerson);
+    return timer(delayMs).pipe(
+      tap(() => this.emitMergedState()),
+      map(() => newPerson)
+    );
   }
 
   update(id: string, changes: Partial<People>): Observable<People> {
+    const delayMs = this.simulation.simulateDelayMs();
+
+    if (this.simulation.simulateError()) {
+      return timer(delayMs).pipe(
+        switchMap(() => throwError(() => new Error('Simulierter Netzwerkfehler beim Speichern (HTTP 500: Server nicht erreichbar).')))
+      );
+    }
+
     const customList = this.getCustomList();
     const customIndex = customList.findIndex(p => p.id === id);
 
@@ -107,11 +127,21 @@ export class SwapiPeopleRepository implements IPeopleRepository {
       this.storage.setItem(STORAGE_KEYS.EDITED, editedMap);
     }
 
-    this.emitMergedState();
-    return of(updated);
+    return timer(delayMs).pipe(
+      tap(() => this.emitMergedState()),
+      map(() => updated)
+    );
   }
 
   delete(id: string): Observable<void> {
+    const delayMs = this.simulation.simulateDelayMs();
+
+    if (this.simulation.simulateError()) {
+      return timer(delayMs).pipe(
+        switchMap(() => throwError(() => new Error('Simulierter Netzwerkfehler beim Löschen (HTTP 500: Server nicht erreichbar).')))
+      );
+    }
+
     const customList = this.getCustomList();
     const customIndex = customList.findIndex(p => p.id === id);
 
@@ -128,8 +158,10 @@ export class SwapiPeopleRepository implements IPeopleRepository {
       }
     }
 
-    this.emitMergedState();
-    return of(void 0);
+    return timer(delayMs).pipe(
+      tap(() => this.emitMergedState()),
+      map(() => void 0)
+    );
   }
 
   undoDelete(id: string): Observable<void> {

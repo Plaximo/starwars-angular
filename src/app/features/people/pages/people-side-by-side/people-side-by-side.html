@@ -447,5 +447,47 @@
       (save)="listVm.savePerson($event)"
       (close)="listVm.closeModal()"
     />
+
+    <!-- Floating Undo Toast for Deleted Entries -->
+    @if (listVm.lastDeletedId()) {
+      <div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 shadow-2xl text-slate-100 text-sm animate-bounce">
+        <span>🗑️ Character record removed.</span>
+        <button
+          type="button"
+          (click)="listVm.undoLastDelete()"
+          class="px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-bold text-xs hover:bg-amber-300 transition cursor-pointer"
+        >
+          Undo
+        </button>
+        <button
+          type="button"
+          (click)="listVm.dismissUndo()"
+          class="text-slate-400 hover:text-slate-200 text-xs p-1 cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+    }
+
+    <!-- Floating Error / Rollback Toast Notification -->
+    @if (listVm.errorMessage() || detailVm.errorMessage()) {
+      <div class="fixed bottom-6 left-6 z-50 flex items-start gap-3 p-4 rounded-xl bg-slate-900/95 border border-rose-500/60 shadow-2xl shadow-rose-950/40 text-slate-100 max-w-md backdrop-blur-md">
+        <span class="text-xl">⚠️</span>
+        <div class="flex-1">
+          <h4 class="text-xs font-bold text-rose-400 uppercase tracking-wider">Rollback durchgeführt</h4>
+          <p class="text-sm font-semibold text-white mt-0.5">{{ listVm.errorMessage() || detailVm.errorMessage() }}</p>
+          @if (listVm.errorDetails() || detailVm.errorDetails()) {
+            <p class="text-xs text-slate-400 mt-1">{{ listVm.errorDetails() || detailVm.errorDetails() }}</p>
+          }
+        </div>
+        <button
+          type="button"
+          (click)="listVm.dismissError(); detailVm.dismissError()"
+          class="text-slate-400 hover:text-white text-xs p-1 cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+    }
   </div>
 </main>
