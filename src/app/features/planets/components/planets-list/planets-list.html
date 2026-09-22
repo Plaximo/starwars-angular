@@ -1,0 +1,143 @@
+<div class="space-y-6">
+  <!-- Sub-Header & Filter Bar -->
+  <div class="p-4 sm:p-5 rounded-xl bg-slate-900/80 border border-slate-800 shadow-md backdrop-blur-sm space-y-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <span>🪐</span>
+          <span>Galactic Star Systems & Planets</span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Planetary registry across the Outer Rim, Mid Rim, and Core Worlds.
+        </p>
+      </div>
+
+      <!-- Count Badge & Reset -->
+      <div class="flex items-center gap-3 self-start md:self-auto">
+        @if (vm.hasActiveFilters()) {
+          <button
+            type="button"
+            (click)="vm.resetFilters()"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition-colors cursor-pointer"
+          >
+            <span>✕ Reset filters</span>
+          </button>
+        }
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-950 border border-slate-700 text-indigo-300">
+          <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+          Showing {{ vm.filteredCount() }} of {{ vm.totalCount() }} planets
+        </span>
+      </div>
+    </div>
+
+    <!-- Filter Controls Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 border-t border-slate-800/80">
+      <!-- Search Input -->
+      <div class="relative">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs">
+          🔍
+        </span>
+        <input
+          type="text"
+          [value]="vm.search()"
+          (input)="vm.setSearch($any($event.target).value)"
+          placeholder="Search planet name or terrain..."
+          class="w-full pl-8 pr-8 py-2 bg-slate-950/70 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition"
+        />
+        @if (vm.search()) {
+          <button
+            type="button"
+            (click)="vm.setSearch('')"
+            class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-white text-xs cursor-pointer"
+          >
+            ✕
+          </button>
+        }
+      </div>
+
+      <!-- Climate Filter -->
+      <div>
+        <select
+          [value]="vm.climate()"
+          (change)="vm.setClimate($any($event.target).value)"
+          class="w-full px-3 py-2 bg-slate-950/70 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition cursor-pointer"
+        >
+          <option value="all">All Climates</option>
+          <option value="arid">Arid</option>
+          <option value="temperate">Temperate</option>
+          <option value="tropical">Tropical</option>
+          <option value="frozen">Frozen / Frigid</option>
+          <option value="murky">Murky / Swamp</option>
+          <option value="hot">Hot</option>
+          <option value="windy">Windy</option>
+        </select>
+      </div>
+
+      <!-- Sort Field -->
+      <div>
+        <select
+          [value]="vm.sortBy()"
+          (change)="vm.setSortBy($any($event.target).value)"
+          class="w-full px-3 py-2 bg-slate-950/70 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition cursor-pointer"
+        >
+          <option value="name">Sort by: Name</option>
+          <option value="population">Sort by: Population</option>
+          <option value="diameter">Sort by: Diameter</option>
+        </select>
+      </div>
+
+      <!-- Sort Direction Toggle Button -->
+      <div>
+        <button
+          type="button"
+          (click)="vm.toggleSortDir()"
+          class="w-full flex items-center justify-center gap-2 px-3 py-2 bg-slate-950/70 border border-slate-700/80 hover:border-slate-600 rounded-lg text-xs font-medium text-slate-200 hover:text-white transition cursor-pointer"
+        >
+          <span>Sort Direction:</span>
+          <span class="font-bold text-amber-400 uppercase">
+            {{ vm.sortDir() === 'asc' ? 'Ascending ↑' : 'Descending ↓' }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (vm.isLoading()) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+        <div class="h-56 rounded-xl bg-slate-900/60 border border-slate-800 animate-pulse p-5 space-y-4">
+          <div class="h-6 w-3/4 bg-slate-800 rounded"></div>
+          <div class="h-4 w-1/2 bg-slate-800/60 rounded"></div>
+          <div class="grid grid-cols-2 gap-3 pt-4">
+            <div class="h-10 bg-slate-800/40 rounded"></div>
+            <div class="h-10 bg-slate-800/40 rounded"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <!-- Planets Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      @for (planet of vm.filteredPlanets(); track planet.url) {
+        <app-planet-card [planet]="planet" />
+      } @empty {
+        <!-- Empty State -->
+        <div class="col-span-full py-16 text-center space-y-3 p-8 rounded-2xl bg-slate-900/40 border border-slate-800">
+          <span class="text-4xl block">🪐</span>
+          <h3 class="text-lg font-bold text-slate-200">No Star Systems Found</h3>
+          <p class="text-xs text-slate-400 max-w-sm mx-auto">
+            No planets matched your filter criteria. Try adjusting the search query or climate selector.
+          </p>
+          <button
+            type="button"
+            (click)="vm.resetFilters()"
+            class="px-4 py-2 rounded-lg text-xs font-semibold bg-amber-400/10 text-amber-300 border border-amber-400/30 hover:bg-amber-400/20 transition cursor-pointer"
+          >
+            Reset Filters
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

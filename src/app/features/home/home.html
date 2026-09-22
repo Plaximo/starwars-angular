@@ -1,1 +1,79 @@
-<app-people-list />
+<div class="max-w-7xl mx-auto px-4 pt-6">
+  <!-- Top Galactic Navigation Tabs -->
+  <nav aria-label="Main Navigation" class="flex flex-col sm:flex-row items-center justify-between gap-4 p-3 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl backdrop-blur-md mb-2">
+    <!-- Holocron Brand -->
+    <div class="flex items-center gap-3 px-2">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/20 text-base">
+        ⚡
+      </div>
+      <div>
+        <span class="text-[10px] tracking-widest uppercase font-semibold text-amber-400 block">Holocron Database</span>
+        <span class="text-sm font-bold text-slate-100">Star Wars Galactic Archives</span>
+      </div>
+    </div>
+
+    <!-- Segmented Tab Switcher -->
+    <div class="flex items-center p-1 bg-slate-950 rounded-xl border border-slate-800 w-full sm:w-auto">
+      <button
+        type="button"
+        (click)="setTab('characters')"
+        [class.bg-gradient-to-r]="activeTab() === 'characters'"
+        [class.from-amber-400]="activeTab() === 'characters'"
+        [class.to-yellow-500]="activeTab() === 'characters'"
+        [class.text-slate-950]="activeTab() === 'characters'"
+        [class.font-bold]="activeTab() === 'characters'"
+        [class.shadow-md]="activeTab() === 'characters'"
+        [class.text-slate-400]="activeTab() !== 'characters'"
+        [class.hover:text-white]="activeTab() !== 'characters'"
+        class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer"
+      >
+        <span>👥</span>
+        <span>Characters</span>
+        <span
+          [class.bg-slate-950]="activeTab() === 'characters'"
+          [class.text-amber-300]="activeTab() === 'characters'"
+          [class.bg-slate-800]="activeTab() !== 'characters'"
+          [class.text-slate-400]="activeTab() !== 'characters'"
+          class="px-1.5 py-0.5 rounded text-[10px] font-semibold"
+        >
+          {{ peopleVm.totalCount() }}
+        </span>
+      </button>
+
+      <button
+        type="button"
+        (click)="setTab('planets')"
+        [class.bg-gradient-to-r]="activeTab() === 'planets'"
+        [class.from-amber-400]="activeTab() === 'planets'"
+        [class.to-yellow-500]="activeTab() === 'planets'"
+        [class.text-slate-950]="activeTab() === 'planets'"
+        [class.font-bold]="activeTab() === 'planets'"
+        [class.shadow-md]="activeTab() === 'planets'"
+        [class.text-slate-400]="activeTab() !== 'planets'"
+        [class.hover:text-white]="activeTab() !== 'planets'"
+        class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer"
+      >
+        <span>🪐</span>
+        <span>Planets</span>
+        <span
+          [class.bg-slate-950]="activeTab() === 'planets'"
+          [class.text-amber-300]="activeTab() === 'planets'"
+          [class.bg-slate-800]="activeTab() !== 'planets'"
+          [class.text-slate-400]="activeTab() !== 'planets'"
+          class="px-1.5 py-0.5 rounded text-[10px] font-semibold"
+        >
+          {{ planetsVm.totalCount() }}
+        </span>
+      </button>
+    </div>
+  </nav>
+</div>
+
+<!-- Active Tab Content -->
+@if (activeTab() === 'characters') {
+  <app-people-list />
+} @else {
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <app-planets-list />
+  </div>
+}
