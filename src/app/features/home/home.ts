@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PeopleList } from '../people/components/people-list/people-list';
+import { PeopleList } from '../people/pages/people-list/people-list';
 
 @Component({
   imports: [PeopleList],

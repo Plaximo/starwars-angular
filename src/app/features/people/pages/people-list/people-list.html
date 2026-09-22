@@ -1,0 +1,41 @@
+<div class="max-w-7xl mx-auto px-4 py-8">
+  
+  <!-- Dumb Component: Header & Total Count Badge -->
+  <app-people-header
+    [totalCount]="vm.totalCount()"
+    [filteredCount]="vm.filteredCount()"
+    [hasActiveFilters]="vm.hasActiveFilters()"
+    (resetFilters)="vm.resetFilters()"
+  />
+
+  <!-- Dumb Component: Search, Filter & Sort Bar -->
+  <app-people-filter-bar
+    [search]="vm.search()"
+    [gender]="vm.gender()"
+    [sortBy]="vm.sortBy()"
+    [sortDir]="vm.sortDir()"
+    (searchChange)="vm.setSearch($event)"
+    (genderChange)="vm.setGender($event)"
+    (sortByChange)="vm.setSortBy($event)"
+    (sortDirToggle)="vm.toggleSortDir()"
+  />
+
+  <!-- Loading State -->
+  @if (vm.isLoading()) {
+    <app-people-skeleton-grid />
+  } @else {
+    <!-- Character Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      @for (person of vm.filteredPeople(); track person.id) {
+        <app-people-list-item [people]="person" />
+      } @empty {
+        <!-- Dumb Component: Empty State -->
+        <app-people-empty-state
+          [hasActiveFilters]="vm.hasActiveFilters()"
+          (resetFilters)="vm.resetFilters()"
+        />
+      }
+    </div>
+  }
+
+</div>

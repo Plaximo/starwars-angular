@@ -8,6 +8,6 @@ export const routes: Routes = [
   {
     path: 'people/:id',
     loadComponent: () =>
-      import('./features/people/components/people-detail/people-detail').then(m => m.PeopleDetail)
+      import('./features/people/pages/people-detail/people-detail').then(m => m.PeopleDetail)
   }
 ];

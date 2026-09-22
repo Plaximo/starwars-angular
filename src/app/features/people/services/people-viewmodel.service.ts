@@ -4,9 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { SwapiPeopleRepository } from '../../../core/api/swapi/swapi-people.repository';
 import { IPeopleRepository } from '../../../core/api/repository.interface';
 import { People } from '../../../core/models';
-
-export type SortField = 'name' | 'height' | 'mass' | 'birthYear';
-export type SortDirection = 'asc' | 'desc';
+import { SortField, SortDirection } from '../models/people-filter.model';
 
 @Injectable({ providedIn: 'root' })
 export class PeopleViewmodel {
