@@ -1,3 +1,57 @@
 @if (people(); as person) {
-  <div>{{ person.name }}</div>
+  <div class="group relative flex flex-col justify-between h-full bg-slate-900/80 hover:bg-slate-850 border border-slate-800 hover:border-amber-400/60 rounded-xl p-5 shadow-lg transition-all duration-200 hover:-translate-y-1 backdrop-blur-sm">
+    
+    <!-- Top section: Name & Custom Badge -->
+    <div>
+      <div class="flex items-start justify-between gap-2 mb-3">
+        <h3 class="font-bold text-lg text-white tracking-wide group-hover:text-amber-300 transition-colors">
+          {{ person.name }}
+        </h3>
+        @if (person.isCustom) {
+          <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/30">
+            Custom
+          </span>
+        }
+      </div>
+
+      <!-- Badges: Gender & Birth Year -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <span class="px-2.5 py-1 text-xs rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+          🎂 {{ person.birthYear }}
+        </span>
+        <span class="px-2.5 py-1 text-xs rounded-md bg-slate-800 text-slate-300 border border-slate-700 capitalize">
+          ⚧️ {{ person.gender }}
+        </span>
+      </div>
+
+      <!-- Details grid -->
+      <div class="grid grid-cols-2 gap-2 text-xs text-slate-400 border-t border-slate-800/80 pt-3 mb-4">
+        <div>
+          <span class="block text-slate-500 text-[10px] uppercase tracking-wider">Height</span>
+          <span class="font-medium text-slate-200">
+            {{ person.heightRaw !== 'unknown' ? person.heightRaw + ' cm' : 'Unknown' }}
+          </span>
+        </div>
+        <div>
+          <span class="block text-slate-500 text-[10px] uppercase tracking-wider">Mass</span>
+          <span class="font-medium text-slate-200">
+            {{ person.massRaw !== 'unknown' ? person.massRaw + ' kg' : 'Unknown' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Action Button -->
+    <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+      <span class="text-slate-500">ID: #{{ person.id }}</span>
+      <button
+        type="button"
+        class="inline-flex items-center gap-1 font-medium text-amber-400 hover:text-amber-300 transition-colors group-hover:translate-x-0.5 transition-transform"
+      >
+        <span>Details</span>
+        <span>&rarr;</span>
+      </button>
+    </div>
+
+  </div>
 }
