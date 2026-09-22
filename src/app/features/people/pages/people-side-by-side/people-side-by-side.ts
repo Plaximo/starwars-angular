@@ -1,12 +1,13 @@
 import { Component, effect, inject, input } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { PeopleListViewModel } from '../../services/people-list-viewmodel.service';
 import { PeopleDetailViewModel } from '../../services/people-detail-viewmodel.service';
 import { PersonFormModal } from '../../components/person-form-modal/person-form-modal';
 import { People } from '../../../../core/models';
 
 @Component({
-  imports: [RouterLink, PersonFormModal],
+  imports: [RouterLink, PersonFormModal, ScrollingModule],
   providers: [PeopleDetailViewModel],
   selector: 'app-people-side-by-side',
   styleUrl: './people-side-by-side.css',
@@ -53,5 +54,12 @@ export class PeopleSideBySide {
     this.router.navigate(['/people-side-by-side'], {
       queryParamsHandling: 'preserve',
     });
+  }
+
+  /**
+   * TrackBy function for CDK Virtual Scroll recycling
+   */
+  trackById(_index: number, item: People): string {
+    return item.id;
   }
 }

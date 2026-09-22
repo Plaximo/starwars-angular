@@ -111,14 +111,29 @@
           </div>
         </div>
 
-        <!-- Scrollable Character List -->
-        <div class="space-y-2.5 h-[calc(100vh-210px)] overflow-y-auto pr-1.5 custom-scrollbar">
-          @if (listVm.isLoading()) {
+        <!-- Scrollable Character List (Virtual Scrolling via Angular CDK) -->
+        @if (listVm.isLoading()) {
+          <div class="space-y-2.5 h-[calc(100vh-210px)] overflow-y-auto pr-1.5 custom-scrollbar">
             @for (item of [1, 2, 3, 4, 5, 6]; track item) {
               <div class="h-20 rounded-xl bg-slate-900/60 border border-slate-800 animate-pulse p-3"></div>
             }
-          } @else {
-            @for (person of listVm.filteredPeople(); track person.id) {
+          </div>
+        } @else if (listVm.filteredPeople().length === 0) {
+          <div class="p-8 text-center bg-slate-900/40 rounded-xl border border-slate-800 text-xs text-slate-400 space-y-2">
+            <span>🔍</span>
+            <p>No characters match your search filters.</p>
+            <button
+              type="button"
+              (click)="listVm.resetFilters()"
+              class="px-3 py-1 bg-amber-400/10 text-amber-300 rounded border border-amber-400/30 text-[11px]"
+            >
+              Reset filters
+            </button>
+          </div>
+        } @else {
+          <!-- Angular CDK Virtual Scroll Viewport (Recycled DOM nodes for 60 FPS scrolling) -->
+          <cdk-virtual-scroll-viewport itemSize="78" class="h-[calc(100vh-210px)] w-full pr-1.5 custom-scrollbar">
+            <div *cdkVirtualFor="let person of listVm.filteredPeople(); trackBy: trackById" class="pb-2.5">
               <div
                 (click)="selectPerson(person)"
                 [class.border-amber-400]="id() === person.id"
@@ -180,21 +195,9 @@
                   </span>
                 </div>
               </div>
-            } @empty {
-              <div class="p-8 text-center bg-slate-900/40 rounded-xl border border-slate-800 text-xs text-slate-400 space-y-2">
-                <span>🔍</span>
-                <p>No characters match your search filters.</p>
-                <button
-                  type="button"
-                  (click)="listVm.resetFilters()"
-                  class="px-3 py-1 bg-amber-400/10 text-amber-300 rounded border border-amber-400/30 text-[11px]"
-                >
-                  Reset filters
-                </button>
-              </div>
-            }
-          }
-        </div>
+            </div>
+          </cdk-virtual-scroll-viewport>
+        }
       </section>
 
       <!-- RIGHT COLUMN: Detail Dossier Pane (7 cols on lg, 8 cols on xl) -->
