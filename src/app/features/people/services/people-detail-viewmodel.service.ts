@@ -2,7 +2,7 @@ import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subscription, forkJoin, of, Observable } from 'rxjs';
-import { catchError, take } from 'rxjs/operators';
+import { catchError, map, take } from 'rxjs/operators';
 import { People, Planet, Starship } from '../../../core/models';
 import { IPeopleRepository, IPlanetRepository, IStarshipRepository } from '../../../core/api/repository.interface';
 import { SwapiPeopleRepository } from '../../../core/api/swapi/swapi-people.repository';
@@ -14,7 +14,6 @@ import { ErrorToastService } from '../../../shared/services/error-toast.service'
 
 @Injectable({ providedIn: 'root' })
 export class PeopleDetailViewModel {
-  // Uses exclusively repositories, NO direct SwapiService in ViewModel or Component!
   private readonly destroyRef = inject(DestroyRef);
   private readonly peopleRepo: IPeopleRepository = inject(SwapiPeopleRepository);
   private readonly planetRepo: IPlanetRepository = inject(SwapiPlanetsRepository);
@@ -23,7 +22,7 @@ export class PeopleDetailViewModel {
   private readonly errorToast = inject(ErrorToastService);
   private readonly router = inject(Router);
 
-  // Subscription management
+  // Subscriptions
   private loadSub?: Subscription;
   private relationsSub?: Subscription;
 
@@ -34,40 +33,42 @@ export class PeopleDetailViewModel {
   readonly isLoading = signal<boolean>(true);
   readonly isLoadingRelations = signal<boolean>(false);
   readonly error = signal<string | null>(null);
-
-  // Edit Modal State
   readonly isEditModalOpen = signal<boolean>(false);
 
-  /**
-   * Loads a person and resolves all relational entities (Homeworld planet, Piloted starships)
-   */
-  loadPerson(id: string): void {
-    // Cancel any in-flight requests for prior character
-    this.loadSub?.unsubscribe();
-    this.relationsSub?.unsubscribe();
+  // Error / Rollback Toast State
+  readonly errorMessage = this.errorToast.activeMessage;
+  readonly errorDetails = this.errorToast.activeDetails;
 
-    this.isLoading.set(true);
-    this.error.set(null);
-    this.person.set(null);
-    this.homeworld.set(null);
-    this.starships.set([]);
+  loadPerson(id: string): void {
+    this.resetState();
 
     this.loadSub = this.peopleRepo
       .getById(id)
       .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (person) => {
+        next: person => {
           this.person.set(person);
           this.isLoading.set(false);
           this.resolveRelations(person);
         },
-        error: (err) => {
-          console.error('Failed to load person:', err);
+        error: () => {
           this.error.set(`Character #${id} could not be retrieved from the archives.`);
           this.isLoading.set(false);
         }
       });
   }
+
+  private resetState(): void {
+    this.loadSub?.unsubscribe();
+    this.relationsSub?.unsubscribe();
+    this.isLoading.set(true);
+    this.error.set(null);
+    this.person.set(null);
+    this.homeworld.set(null);
+    this.starships.set([]);
+  }
+
+  // --- Modal & Error Controls ---
 
   openEditModal(): void {
     this.isEditModalOpen.set(true);
@@ -77,74 +78,61 @@ export class PeopleDetailViewModel {
     this.isEditModalOpen.set(false);
   }
 
-  // Error / Rollback Toast State
-  readonly errorMessage = this.errorToast.activeMessage;
-  readonly errorDetails = this.errorToast.activeDetails;
-
   dismissError(): void {
     this.errorToast.dismiss();
   }
 
+  // --- Mutations with Optimistic Updates & Rollback ---
+
   saveEdit(payload: PersonFormPayload): void {
-    const p = this.person();
-    if (!p) return;
-
-    const previousPerson = p;
-    const updatedOptimistic: People = {
-      ...p,
-      ...payload,
-      edited: new Date().toISOString()
-    };
-
-    // 1. Optimistic Update: Immediately reflect edited attributes and update relations
-    this.person.set(updatedOptimistic);
+    const current = this.person();
+    if (!current) return;
     this.closeEditModal();
-    this.resolveRelations(updatedOptimistic);
+    this.applyOptimisticEdit(current, payload);
+  }
 
-    // 2. Async Server Persistence
+  private applyOptimisticEdit(current: People, payload: PersonFormPayload): void {
+    const updated: People = { ...current, ...payload, edited: new Date().toISOString() };
+
+    this.person.set(updated);
+    this.resolveRelations(updated);
+
     this.peopleRepo
-      .update(p.id, payload)
+      .update(current.id, payload)
       .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (updated) => {
-          this.person.set(updated);
-        },
+        next: saved => this.person.set(saved),
         error: (err: any) => {
-          // 3. Rollback on Failure: Restore previous snapshot and re-resolve previous relations
-          this.person.set(previousPerson);
-          this.resolveRelations(previousPerson);
+          this.person.set(current);
+          this.resolveRelations(current);
           this.errorToast.trigger(
-            `Fehler beim Speichern von "${previousPerson.name}"`,
-            err?.message || 'Dossier-Änderungen wurden rückgängig gemacht (Rollback).'
+            `Fehler beim Speichern von "${current.name}"`,
+            err?.message || 'Änderungen wurden per Rollback zurückgesetzt.'
           );
         }
       });
   }
 
   deleteWithConfirm(): void {
-    const p = this.person();
-    if (!p) return;
+    const current = this.person();
+    if (!current) return;
 
     const confirmed = window.confirm('Are you sure you want to delete this character record from the Holocron?');
     if (!confirmed) return;
 
     this.peopleRepo
-      .delete(p.id)
+      .delete(current.id)
       .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
-          this.router.navigate(['/'], { queryParamsHandling: 'preserve' });
-        },
+        next: () => this.router.navigate(['/'], { queryParamsHandling: 'preserve' }),
         error: (err: any) => {
-          this.errorToast.trigger(
-            `Löschen von "${p.name}" fehlgeschlagen!`,
-            err?.message || 'Der Eintrag konnte nicht gelöscht werden.'
-          );
+          this.errorToast.trigger(`Löschen von "${current.name}" fehlgeschlagen!`, err?.message);
         }
       });
   }
 
-  // Bookmark Actions
+  // --- Bookmarks ---
+
   isBookmarked(id: string): boolean {
     return this.bookmarkService.isBookmarked(id);
   }
@@ -153,49 +141,40 @@ export class PeopleDetailViewModel {
     this.bookmarkService.toggleBookmark(id);
   }
 
+  // --- Relational Entities Resolution ---
+
   private resolveRelations(person: People): void {
     this.relationsSub?.unsubscribe();
     this.isLoadingRelations.set(true);
 
-    // 1. Resolve Homeworld via Planet Repository
-    const homeworld$ = person.homeworldUrl
-      ? this.planetRepo.getByIdOrUrl(person.homeworldUrl).pipe(
-          catchError((err) => {
-            console.warn('Homeworld load failed:', err);
-            return of(null);
-          })
-        )
-      : of(null);
-
-    // 2. Resolve Starships via Starship Repository
-    const starships$ = person.starships && person.starships.length > 0
-      ? forkJoin(
-          person.starships.map(url =>
-            this.starshipRepo.getByIdOrUrl(url).pipe(
-              catchError((err) => {
-                console.warn('Starship load failed:', err);
-                return of(null);
-              })
-            )
-          )
-        )
-      : of([]);
-
     this.relationsSub = forkJoin({
-      homeworld: homeworld$,
-      starships: starships$
+      homeworld: this.resolveHomeworld(person.homeworldUrl),
+      starships: this.resolveStarships(person.starships)
     })
       .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ homeworld, starships }) => {
           this.homeworld.set(homeworld);
-          const validShips = (starships || []).filter((s): s is Starship => s !== null);
-          this.starships.set(validShips);
+          this.starships.set(starships);
           this.isLoadingRelations.set(false);
         },
-        error: () => {
-          this.isLoadingRelations.set(false);
-        }
+        error: () => this.isLoadingRelations.set(false)
       });
+  }
+
+  private resolveHomeworld(url?: string): Observable<Planet | null> {
+    if (!url) return of(null);
+    return this.planetRepo.getByIdOrUrl(url).pipe(catchError(() => of(null)));
+  }
+
+  private resolveStarships(urls?: string[]): Observable<Starship[]> {
+    if (!urls || urls.length === 0) return of([]);
+    const requests$ = urls.map(url =>
+      this.starshipRepo.getByIdOrUrl(url).pipe(catchError(() => of(null)))
+    );
+    return forkJoin(requests$).pipe(
+      map(ships => (ships || []).filter((s): s is Starship => s !== null)),
+      catchError(() => of([]))
+    );
   }
 }
