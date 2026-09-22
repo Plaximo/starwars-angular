@@ -1,5 +1,5 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PeopleList } from '../people/pages/people-list/people-list';
 import { PlanetsList } from '../planets/components/planets-list/planets-list';
@@ -9,7 +9,7 @@ import { PlanetsViewmodel } from '../planets/services/planets-viewmodel.service'
 export type HomeTab = 'characters' | 'planets';
 
 @Component({
-  imports: [PeopleList, PlanetsList, RouterLink],
+  imports: [PeopleList, PlanetsList],
   selector: 'app-home',
   styleUrl: './home.css',
   templateUrl: './home.html',
