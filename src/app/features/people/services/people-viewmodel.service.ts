@@ -1,13 +1,16 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { Observable, of, take } from 'rxjs';
 import { SwapiPeopleRepository } from '../../../core/api/swapi/swapi-people.repository';
 import { IPeopleRepository } from '../../../core/api/repository.interface';
 import { People } from '../../../core/models';
 import { SortField, SortDirection } from '../models/people-filter.model';
+import { PersonFormPayload } from '../models/person-form.model';
 
 @Injectable({ providedIn: 'root' })
 export class PeopleViewmodel {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly peopleRepository: IPeopleRepository = inject(SwapiPeopleRepository);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -22,9 +25,14 @@ export class PeopleViewmodel {
   readonly sortBy = signal<SortField>('name');
   readonly sortDir = signal<SortDirection>('asc');
 
+  // Modal & CRUD UI State
+  readonly isModalOpen = signal<boolean>(false);
+  readonly selectedPerson = signal<People | null>(null);
+  readonly lastDeletedId = signal<string | null>(null);
+
   constructor() {
-    // Synchronize initial state from URL Query Parameters
-    this.route.queryParams.subscribe(params => {
+    // Synchronize initial state from URL Query Parameters with lifecycle management
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['search'] !== undefined) {
         this.search.set(params['search']);
       }
@@ -143,6 +151,96 @@ export class PeopleViewmodel {
     this.sortBy.set('name');
     this.sortDir.set('asc');
     this.updateUrlParams(false);
+  }
+
+  // CRUD Operations
+  createPerson(data: Omit<People, 'id' | 'url'>): Observable<People> {
+    return this.peopleRepository.create(data);
+  }
+
+  updatePerson(id: string, changes: Partial<People>): Observable<People> {
+    return this.peopleRepository.update(id, changes);
+  }
+
+  deletePerson(id: string): Observable<void> {
+    return this.peopleRepository.delete(id);
+  }
+
+  undoDelete(id: string): Observable<void> {
+    if (this.peopleRepository.undoDelete) {
+      return this.peopleRepository.undoDelete(id);
+    }
+    return of(void 0);
+  }
+
+  // Modal & CRUD UI Actions
+  openCreateModal(): void {
+    this.selectedPerson.set(null);
+    this.isModalOpen.set(true);
+  }
+
+  openEditModal(person: People): void {
+    this.selectedPerson.set(person);
+    this.isModalOpen.set(true);
+  }
+
+  closeModal(): void {
+    this.isModalOpen.set(false);
+    this.selectedPerson.set(null);
+  }
+
+  savePerson(payload: PersonFormPayload): void {
+    const current = this.selectedPerson();
+    if (current) {
+      this.updatePerson(current.id, payload)
+        .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => this.closeModal(),
+          error: (err) => console.error('Failed to update person:', err)
+        });
+    } else {
+      this.createPerson(payload)
+        .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => this.closeModal(),
+          error: (err) => console.error('Failed to create person:', err)
+        });
+    }
+  }
+
+  deletePersonWithConfirm(id: string): void {
+    const confirmed = window.confirm('Are you sure you want to delete this character record from the Holocron?');
+    if (!confirmed) return;
+
+    this.deletePerson(id)
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.lastDeletedId.set(id);
+          setTimeout(() => {
+            if (this.lastDeletedId() === id) {
+              this.lastDeletedId.set(null);
+            }
+          }, 6000);
+        },
+        error: (err) => console.error('Failed to delete person:', err)
+      });
+  }
+
+  undoLastDelete(): void {
+    const id = this.lastDeletedId();
+    if (id) {
+      this.undoDelete(id)
+        .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => this.lastDeletedId.set(null),
+          error: (err) => console.error('Failed to undo delete:', err)
+        });
+    }
+  }
+
+  dismissUndo(): void {
+    this.lastDeletedId.set(null);
   }
 
   // Synchronize state back into URL query parameters

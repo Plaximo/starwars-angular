@@ -18,7 +18,7 @@ export interface People {
   vehicles: string[];
   starships: string[];
   starshipIds: string[];
-  url: string;
+  url?: string;
   created: string;
   edited: string;
   isCustom?: boolean;    // true for user-created entries stored in localStorage

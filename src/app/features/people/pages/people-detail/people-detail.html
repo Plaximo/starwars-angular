@@ -59,14 +59,34 @@
             <p class="text-xs text-slate-400 mt-1">Holocron Record ID: #{{ p.id }}</p>
           </div>
 
-          <!-- Quick Badges -->
-          <div class="flex flex-wrap gap-2">
+          <!-- Quick Badges and Actions -->
+          <div class="flex flex-wrap items-center gap-2">
             <span class="px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-200 border border-slate-700 capitalize">
               ⚧️ {{ p.gender }}
             </span>
             <span class="px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-slate-200 border border-slate-700">
               🎂 {{ p.birthYear }}
             </span>
+
+            <!-- Edit Button -->
+            <button
+              type="button"
+              (click)="vm.openEditModal()"
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 transition cursor-pointer"
+            >
+              <span>✏️</span>
+              <span>Edit</span>
+            </button>
+
+            <!-- Delete Button -->
+            <button
+              type="button"
+              (click)="vm.deleteWithConfirm()"
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition cursor-pointer"
+            >
+              <span>🗑️</span>
+              <span>Delete</span>
+            </button>
           </div>
         </div>
 
@@ -220,6 +240,14 @@
           <span class="text-slate-500">Record updated: {{ p.edited | date:'mediumDate' }}</span>
         </section>
       }
+
+      <!-- Edit Modal -->
+      <app-person-form-modal
+        [isOpen]="vm.isEditModalOpen()"
+        [person]="p"
+        (save)="vm.saveEdit($event)"
+        (close)="vm.closeEditModal()"
+      />
 
     </div>
   }

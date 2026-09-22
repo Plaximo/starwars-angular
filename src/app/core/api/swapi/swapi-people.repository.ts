@@ -1,17 +1,42 @@
-import { inject, Injectable } from "@angular/core";
-import { map, Observable } from "rxjs";
-import { People } from "../../models";
-import { SwapiService } from "./swapi.service";
-import { mapSwapiPeopleToPeople } from "./mapper/people.mapper";
-import { IPeopleRepository } from "../repository.interface";
+import { Injectable, inject } from '@angular/core';
+import { BehaviorSubject, Observable, map, of, switchMap, tap } from 'rxjs';
+import { People } from '../../models';
+import { SwapiService } from './swapi.service';
+import { mapSwapiPeopleToPeople } from './mapper/people.mapper';
+import { IPeopleRepository } from '../repository.interface';
+import { LocalStorageService } from '../../storage/local-storage.service';
+
+const STORAGE_KEYS = {
+  CUSTOM: 'sw_custom_people',
+  EDITED: 'sw_edited_people',
+  DELETED: 'sw_deleted_people'
+} as const;
 
 @Injectable({ providedIn: 'root' })
 export class SwapiPeopleRepository implements IPeopleRepository {
-  private swapi = inject(SwapiService);
+  private readonly swapi = inject(SwapiService);
+  private readonly storage = inject(LocalStorageService);
+
+  // Cached base SWAPI items
+  private baseSwapiPeople: People[] | null = null;
+
+  // Emits the merged list (SWAPI + LocalStorage CRUD)
+  private readonly peopleSubject = new BehaviorSubject<People[] | null>(null);
 
   getAll(): Observable<People[]> {
+    if (this.peopleSubject.value !== null) {
+      return this.peopleSubject.asObservable().pipe(
+        map(people => people ?? [])
+      );
+    }
+
     return this.swapi.getAllPeople().pipe(
-      map(dtos => mapSwapiPeopleToPeople(dtos))
+      map(dtos => mapSwapiPeopleToPeople(dtos)),
+      tap(base => {
+        this.baseSwapiPeople = base;
+        this.emitMergedState();
+      }),
+      switchMap(() => this.peopleSubject.asObservable().pipe(map(p => p ?? [])))
     );
   }
 
@@ -20,18 +45,133 @@ export class SwapiPeopleRepository implements IPeopleRepository {
       map(all => {
         const found = all.find(p => p.id === id);
         if (!found) {
-          throw new Error(`Person with id "${id}" was not found.`);
+          throw new Error(`Person #${id} was not found.`);
         }
         return found;
       })
     );
   }
 
-  update?(id: string, data: Partial<People>): Observable<People> {
-    throw new Error("Method not implemented.");
+  create(data: Omit<People, 'id' | 'url'>): Observable<People> {
+    const id = `custom_${Date.now()}`;
+    const newPerson: People = {
+      ...data,
+      id,
+      url: `https://local.app/people/${id}`,
+      created: new Date().toISOString(),
+      edited: new Date().toISOString(),
+      isCustom: true
+    };
+
+    const customList = this.getCustomList();
+    customList.unshift(newPerson);
+    this.storage.setItem(STORAGE_KEYS.CUSTOM, customList);
+
+    this.emitMergedState();
+    return of(newPerson);
   }
 
-  delete?(id: string): Observable<void> {
-    throw new Error("Method not implemented.");
+  update(id: string, changes: Partial<People>): Observable<People> {
+    const customList = this.getCustomList();
+    const customIndex = customList.findIndex(p => p.id === id);
+
+    let updated: People;
+
+    if (customIndex !== -1) {
+      // It's a custom-created person
+      updated = {
+        ...customList[customIndex],
+        ...changes,
+        edited: new Date().toISOString()
+      };
+      customList[customIndex] = updated;
+      this.storage.setItem(STORAGE_KEYS.CUSTOM, customList);
+    } else {
+      // It's a SWAPI-based person: store override in edited map
+      const editedMap = this.getEditedMap();
+      const existing = editedMap[id] || {};
+      const base = this.baseSwapiPeople?.find(p => p.id === id);
+
+      updated = {
+        ...(base as People),
+        ...existing,
+        ...changes,
+        edited: new Date().toISOString()
+      };
+
+      editedMap[id] = {
+        ...existing,
+        ...changes,
+        edited: updated.edited
+      };
+      this.storage.setItem(STORAGE_KEYS.EDITED, editedMap);
+    }
+
+    this.emitMergedState();
+    return of(updated);
+  }
+
+  delete(id: string): Observable<void> {
+    const customList = this.getCustomList();
+    const customIndex = customList.findIndex(p => p.id === id);
+
+    if (customIndex !== -1) {
+      // Remove from custom entries
+      customList.splice(customIndex, 1);
+      this.storage.setItem(STORAGE_KEYS.CUSTOM, customList);
+    } else {
+      // SWAPI item: add to deleted blacklist
+      const deletedIds = this.getDeletedIds();
+      if (!deletedIds.includes(id)) {
+        deletedIds.push(id);
+        this.storage.setItem(STORAGE_KEYS.DELETED, deletedIds);
+      }
+    }
+
+    this.emitMergedState();
+    return of(void 0);
+  }
+
+  undoDelete(id: string): Observable<void> {
+    const deletedIds = this.getDeletedIds().filter(dId => dId !== id);
+    this.storage.setItem(STORAGE_KEYS.DELETED, deletedIds);
+    this.emitMergedState();
+    return of(void 0);
+  }
+
+  // --- Helpers ---
+
+  private getCustomList(): People[] {
+    return this.storage.getItem<People[]>(STORAGE_KEYS.CUSTOM, []);
+  }
+
+  private getEditedMap(): Record<string, Partial<People>> {
+    return this.storage.getItem<Record<string, Partial<People>>>(STORAGE_KEYS.EDITED, {});
+  }
+
+  private getDeletedIds(): string[] {
+    return this.storage.getItem<string[]>(STORAGE_KEYS.DELETED, []);
+  }
+
+  private emitMergedState(): void {
+    if (!this.baseSwapiPeople) return;
+
+    const customList = this.getCustomList();
+    const editedMap = this.getEditedMap();
+    const deletedSet = new Set(this.getDeletedIds());
+
+    // Filter SWAPI people against deleted list & apply any edited overrides
+    const mergedSwapi = this.baseSwapiPeople
+      .filter(p => !deletedSet.has(p.id))
+      .map(p => {
+        const overrides = editedMap[p.id];
+        return overrides ? { ...p, ...overrides } : p;
+      });
+
+    // Valid custom entries (also checked against deletedSet just in case)
+    const validCustom = customList.filter(p => !deletedSet.has(p.id));
+
+    // Custom entries appear at the top, followed by SWAPI entries
+    this.peopleSubject.next([...validCustom, ...mergedSwapi]);
   }
 }

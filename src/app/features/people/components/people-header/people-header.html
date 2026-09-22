@@ -20,6 +20,15 @@
           <span>✕ Reset filters</span>
         </button>
       }
+      <!-- Create Character Button -->
+      <button
+        type="button"
+        (click)="createClick.emit()"
+        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 shadow-md transition-all hover:scale-105 cursor-pointer"
+      >
+        <span>+</span>
+        <span>New Character</span>
+      </button>
       <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-700 text-amber-300">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         Showing {{ filteredCount() }} of {{ totalCount() }}

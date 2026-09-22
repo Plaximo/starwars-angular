@@ -5,6 +5,7 @@ import { PeopleFilterBar } from '../../components/people-filter-bar/people-filte
 import { PeopleListItem } from '../../components/people-list-item/people-list-item';
 import { PeopleSkeletonGrid } from '../../components/people-skeleton-grid/people-skeleton-grid';
 import { PeopleEmptyState } from '../../components/people-empty-state/people-empty-state';
+import { PersonFormModal } from '../../components/person-form-modal/person-form-modal';
 
 @Component({
   imports: [
@@ -12,13 +13,14 @@ import { PeopleEmptyState } from '../../components/people-empty-state/people-emp
     PeopleFilterBar,
     PeopleListItem,
     PeopleSkeletonGrid,
-    PeopleEmptyState
+    PeopleEmptyState,
+    PersonFormModal
   ],
   selector: 'app-people-list',
   styleUrl: './people-list.css',
   templateUrl: './people-list.html',
 })
 export class PeopleList {
-  // Smart Component: Injects the ViewModel and wires data/events to dumb components
+  // Pure Smart Component: Delegates all state, modal management & actions to ViewModel!
   protected readonly vm = inject(PeopleViewmodel);
 }

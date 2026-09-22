@@ -6,6 +6,7 @@
     [filteredCount]="vm.filteredCount()"
     [hasActiveFilters]="vm.hasActiveFilters()"
     (resetFilters)="vm.resetFilters()"
+    (createClick)="vm.openCreateModal()"
   />
 
   <!-- Dumb Component: Search, Filter & Sort Bar -->
@@ -27,7 +28,11 @@
     <!-- Character Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       @for (person of vm.filteredPeople(); track person.id) {
-        <app-people-list-item [people]="person" />
+        <app-people-list-item
+          [people]="person"
+          (edit)="vm.openEditModal($event)"
+          (delete)="vm.deletePersonWithConfirm($event)"
+        />
       } @empty {
         <!-- Dumb Component: Empty State -->
         <app-people-empty-state
@@ -35,6 +40,35 @@
           (resetFilters)="vm.resetFilters()"
         />
       }
+    </div>
+  }
+
+  <!-- Form Modal for Create & Edit -->
+  <app-person-form-modal
+    [isOpen]="vm.isModalOpen()"
+    [person]="vm.selectedPerson()"
+    (save)="vm.savePerson($event)"
+    (close)="vm.closeModal()"
+  />
+
+  <!-- Floating Undo Toast for Deleted Entries -->
+  @if (vm.lastDeletedId()) {
+    <div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 shadow-2xl text-slate-100 text-sm animate-bounce">
+      <span>🗑️ Character record removed.</span>
+      <button
+        type="button"
+        (click)="vm.undoLastDelete()"
+        class="px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-bold text-xs hover:bg-amber-300 transition cursor-pointer"
+      >
+        Undo
+      </button>
+      <button
+        type="button"
+        (click)="vm.dismissUndo()"
+        class="text-slate-400 hover:text-slate-200 text-xs p-1 cursor-pointer"
+      >
+        ✕
+      </button>
     </div>
   }
 

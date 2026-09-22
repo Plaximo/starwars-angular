@@ -11,4 +11,5 @@ export class PeopleHeader {
   hasActiveFilters = input<boolean>(false);
 
   resetFilters = output<void>();
+  createClick = output<void>();
 }

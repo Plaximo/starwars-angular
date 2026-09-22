@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { People } from '../../../../core/models';
 
@@ -10,4 +10,7 @@ import { People } from '../../../../core/models';
 })
 export class PeopleListItem {
   people = input<People>();
+
+  edit = output<People>();
+  delete = output<string>();
 }
